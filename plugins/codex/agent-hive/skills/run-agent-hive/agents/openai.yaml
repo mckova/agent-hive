@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Agent Hive"
+  short_description: "Guarded, budget-aware agent orchestration"
+  default_prompt: "Use $run-agent-hive to plan and execute this project with guarded cells, a fixed budget, and resumable checkpoints."

@@ -1,0 +1,2677 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T17:10:54.510Z",
+  "oracle": {
+    "question": "Does Agent Hive improve answer quality enough to justify its latency and token cost?",
+    "dataset": "hotpotqa/hotpot_qa",
+    "config": "distractor",
+    "split": "validation",
+    "examples": 6,
+    "seed": 99173,
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "none",
+    "outputTokenBudgetPerSystem": 416,
+    "rag": "local BM25 top-3 + one gpt-5.6-sol call",
+    "hive": "scout -> forager -> builder -> guard; every cell uses gpt-5.6-sol",
+    "adaptiveMemoryHive": "scoped evidence memory + goal controller + hooks + early stop + at most one guard repair; every model call uses gpt-5.6-sol",
+    "loss": "taskLoss = 1 - HotpotQA token F1; exactLoss = 1 - exact match"
+  },
+  "methods": {
+    "directGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0,
+      "tokenF1": 0.26666666666666666,
+      "exactLoss": 1,
+      "taskLoss": 0.7333333333333334,
+      "averageEndToEndLatencyMs": 1906.7070666666666,
+      "p50EndToEndLatencyMs": 2046.5184999999983,
+      "usage": {
+        "inputTokens": 407,
+        "outputTokens": 46,
+        "reasoningTokens": 0,
+        "totalTokens": 453
+      },
+      "averageTokensPerExample": 75.5
+    },
+    "ragGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0.5,
+      "tokenF1": 0.6333333333333333,
+      "exactLoss": 0.5,
+      "taskLoss": 0.3666666666666667,
+      "averageEndToEndLatencyMs": 2833.510933333331,
+      "p50EndToEndLatencyMs": 1497.729999999996,
+      "usage": {
+        "inputTokens": 4419,
+        "outputTokens": 42,
+        "reasoningTokens": 0,
+        "totalTokens": 4461
+      },
+      "averageTokensPerExample": 743.5
+    },
+    "agentHive": {
+      "examples": 6,
+      "calls": 24,
+      "exactMatch": 0.3333333333333333,
+      "tokenF1": 0.6,
+      "exactLoss": 0.6666666666666666,
+      "taskLoss": 0.4000000000000001,
+      "averageEndToEndLatencyMs": 10123.63045,
+      "p50EndToEndLatencyMs": 8338.8646,
+      "usage": {
+        "inputTokens": 16952,
+        "outputTokens": 651,
+        "reasoningTokens": 0,
+        "totalTokens": 17603
+      },
+      "averageTokensPerExample": 2933.8333333333335
+    },
+    "adaptiveMemoryHive": {
+      "examples": 6,
+      "calls": 10,
+      "exactMatch": 0.5,
+      "tokenF1": 0.7666666666666666,
+      "exactLoss": 0.5,
+      "taskLoss": 0.2333333333333333,
+      "averageEndToEndLatencyMs": 3606.9704333333343,
+      "p50EndToEndLatencyMs": 3269.5864999999976,
+      "usage": {
+        "inputTokens": 12328,
+        "outputTokens": 213,
+        "reasoningTokens": 0,
+        "totalTokens": 12541
+      },
+      "averageTokensPerExample": 2090.1666666666665
+    }
+  },
+  "examples": [
+    {
+      "id": "5ae5aba0554299546bf82f17",
+      "type": "bridge",
+      "level": "hard",
+      "question": "Which of Tara Strong major voice role in animated series is an American animated television series based on the DC Comics fictional superhero team, the \"Teen Titans\"?",
+      "expected": "Teen Titans Go!",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "Teen Titans",
+          "endToEndLatencyMs": 2306.3337,
+          "usage": {
+            "inputTokens": 75,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 81,
+            "modelLatencyMs": 2306.2144
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Teen Titans",
+              "latencyMs": 2306.2144,
+              "usage": {
+                "input_tokens": 75,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 81
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "ragGpt56": {
+          "answer": "Teen Titans Go!",
+          "endToEndLatencyMs": 2024.3737999999994,
+          "usage": {
+            "inputTokens": 473,
+            "outputTokens": 8,
+            "reasoningTokens": 0,
+            "totalTokens": 481,
+            "modelLatencyMs": 2022.9184999999998
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Teen Titans Go!",
+              "latencyMs": 2022.9184999999998,
+              "usage": {
+                "input_tokens": 473,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 481
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 1.3931000000002314,
+            "selectedTitles": [
+              "List of Teen Titans Go! episodes",
+              "Teen Titans Go! (TV series)",
+              "Tara Strong"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "Raven",
+          "endToEndLatencyMs": 15080.848000000002,
+          "usage": {
+            "inputTokens": 2565,
+            "outputTokens": 76,
+            "reasoningTokens": 0,
+            "totalTokens": 2641,
+            "modelLatencyMs": 15078.467399999998
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Tara Strong → Raven; Raven → Teen Titans\nevidence: “Tara Strong” identifies Raven as a major animated-series voice role; “Teen Titans” identifies the show as an American animated television series based on DC Comics’",
+              "latencyMs": 3485.2334999999994,
+              "usage": {
+                "input_tokens": 309,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 365
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Teen Titans — Raven",
+              "latencyMs": 4687.183800000001,
+              "usage": {
+                "input_tokens": 1728,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1736
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Raven",
+              "latencyMs": 5666.569799999999,
+              "usage": {
+                "input_tokens": 260,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 266
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Raven",
+              "latencyMs": 1239.4802999999993,
+              "usage": {
+                "input_tokens": 268,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 274
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Tara Strong → Raven; Raven → Teen Titans\nevidence: “Tara Strong” identifies Raven as a major animated-series voice role; “Teen Titans” identifies the show as an American animated television series based on DC Comics’",
+            "forage": "Teen Titans — Raven",
+            "build": "Raven",
+            "verify": "Raven"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Teen Titans Go!",
+          "endToEndLatencyMs": 1985.8401000000013,
+          "usage": {
+            "inputTokens": 511,
+            "outputTokens": 34,
+            "reasoningTokens": 0,
+            "totalTokens": 545,
+            "modelLatencyMs": 1981.4817999999977
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Teen Titans Go!\",\"confidence\":1.0,\"sources\":[\"Tara Strong\",\"Teen Titans Go! (TV series)\"]}",
+              "latencyMs": 1981.4817999999977,
+              "usage": {
+                "input_tokens": 511,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 34,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 545
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Which of Tara Strong major voice role in animated series is an American animated television series based on the DC Comics fictional superhero team, the \"Teen Titans\"?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 511,
+              "outputTokens": 34,
+              "totalTokens": 545,
+              "latencyMs": 1981.4817999999977
+            },
+            "states": [
+              {
+                "answer": "Teen Titans Go!",
+                "confidence": 1,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:11:13.924Z",
+                "data": {
+                  "chars": 166,
+                  "scope": "mission:5ae5aba0554299546bf82f17"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:11:13.924Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:11:13.925Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:13.927Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:15.908Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 511,
+                  "outputTokens": 34,
+                  "totalTokens": 545,
+                  "latencyMs": 1981.4817999999977
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:11:15.909Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 1,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:11:15.909Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae5aba0554299546bf82f17",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 7,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "Teen Titans Go!",
+            "confidence": 1,
+            "sources": [
+              "Tara Strong",
+              "Teen Titans Go! (TV series)"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Teen Titans Go!\",\"confidence\":1.0,\"sources\":[\"Tara Strong\",\"Teen Titans Go! (TV series)\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5a85ea095542994775f606a8",
+      "type": "bridge",
+      "level": "hard",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "expected": "Animorphs",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Animorphs",
+          "endToEndLatencyMs": 2282.0913999999975,
+          "usage": {
+            "inputTokens": 471,
+            "outputTokens": 7,
+            "reasoningTokens": 0,
+            "totalTokens": 478,
+            "modelLatencyMs": 2280.860800000002
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Animorphs",
+              "latencyMs": 2280.860800000002,
+              "usage": {
+                "input_tokens": 471,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 478
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 1.1773000000030152,
+            "selectedTitles": [
+              "Animorphs",
+              "Science Fantasy (magazine)",
+              "Etiquette &amp; Espionage"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "Animorphs",
+          "endToEndLatencyMs": 11718.0364,
+          "usage": {
+            "inputTokens": 2844,
+            "outputTokens": 143,
+            "reasoningTokens": 0,
+            "totalTokens": 2987,
+            "modelLatencyMs": 11717.427599999995
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: identified\nartifacts: Animorphs\nevidence: \"Animorphs\" establishes the first-person young adult science-fantasy series; \"The Hork-Bajir Chronicles\" establishes a companion Chronicle about an enslaved alien species/world.\nblock",
+              "latencyMs": 4408.460199999998,
+              "usage": {
+                "input_tokens": 302,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 358
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: supported; artifacts: Animorphs; evidence: “Animorphs” — first-person young adult science-fantasy series; “The Hork-Bajir Chronicles” — companion book about the enslaved Hork-Bajir and their world; blockers: none; spent: 2 documents; reusable_context: Animorphs",
+              "latencyMs": 2454.2952000000005,
+              "usage": {
+                "input_tokens": 1885,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1882,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 73,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1958
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Animorphs",
+              "latencyMs": 1727.0514000000003,
+              "usage": {
+                "input_tokens": 324,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 331
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Animorphs",
+              "latencyMs": 3127.620799999997,
+              "usage": {
+                "input_tokens": 333,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 340
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: identified\nartifacts: Animorphs\nevidence: \"Animorphs\" establishes the first-person young adult science-fantasy series; \"The Hork-Bajir Chronicles\" establishes a companion Chronicle about an enslaved alien species/world.\nblock",
+            "forage": "status: supported; artifacts: Animorphs; evidence: “Animorphs” — first-person young adult science-fantasy series; “The Hork-Bajir Chronicles” — companion book about the enslaved Hork-Bajir and their world; blockers: none; spent: 2 documents; reusable_context: Animorphs",
+            "build": "Animorphs",
+            "verify": "Animorphs"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Animorphs",
+          "endToEndLatencyMs": 2916.2220000000016,
+          "usage": {
+            "inputTokens": 2199,
+            "outputTokens": 31,
+            "reasoningTokens": 0,
+            "totalTokens": 2230,
+            "modelLatencyMs": 2884.8398000000016
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Animorphs\",\"confidence\":0.72,\"sources\":[\"Animorphs\"]}",
+              "latencyMs": 1915.0866999999998,
+              "usage": {
+                "input_tokens": 509,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 24,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 533
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Animorphs",
+              "latencyMs": 969.7531000000017,
+              "usage": {
+                "input_tokens": 1690,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1687,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1697
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 2199,
+              "outputTokens": 31,
+              "totalTokens": 2230,
+              "latencyMs": 2884.8398000000016
+            },
+            "states": [
+              {
+                "answer": "Animorphs",
+                "confidence": 0.72,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "Animorphs",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:11:29.915Z",
+                "data": {
+                  "chars": 151,
+                  "scope": "mission:5a85ea095542994775f606a8"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:11:29.916Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:11:29.916Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:29.917Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:31.832Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 509,
+                  "outputTokens": 24,
+                  "totalTokens": 533,
+                  "latencyMs": 1915.0866999999998
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:11:31.833Z",
+                "data": {
+                  "confidence": 0.72,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:31.861Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:32.831Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 2199,
+                  "outputTokens": 31,
+                  "totalTokens": 2230,
+                  "latencyMs": 2884.8398000000016
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:11:32.831Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:11:32.831Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a85ea095542994775f606a8",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Animorphs",
+            "confidence": 0.72,
+            "sources": [
+              "Animorphs"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Animorphs\",\"confidence\":0.72,\"sources\":[\"Animorphs\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "The Journals of Corrie Belle Hollister",
+          "endToEndLatencyMs": 2544.852899999998,
+          "usage": {
+            "inputTokens": 75,
+            "outputTokens": 13,
+            "reasoningTokens": 0,
+            "totalTokens": 88,
+            "modelLatencyMs": 2544.8335000000006
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "The Journals of Corrie Belle Hollister",
+              "latencyMs": 2544.8335000000006,
+              "usage": {
+                "input_tokens": 75,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 13,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 88
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "5ae0d4c9554299603e418468",
+      "type": "bridge",
+      "level": "hard",
+      "question": "Roger O. Egeberg was Assistant Secretary for Health and Scientific Affairs during the administration of a president that served during what years?",
+      "expected": "1969 until 1974",
+      "executionOrder": [
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56"
+      ],
+      "systems": {
+        "agentHive": {
+          "answer": "1969–1974",
+          "endToEndLatencyMs": 9989.667000000001,
+          "usage": {
+            "inputTokens": 2812,
+            "outputTokens": 84,
+            "reasoningTokens": 0,
+            "totalTokens": 2896,
+            "modelLatencyMs": 9988.775599999994
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Roger O. Egeberg → Richard Nixon → presidential term years\nevidence: “Roger O. Egeberg” identifies the president whose administration he served in; “Richard Nixon” supplies that president’s years in office.",
+              "latencyMs": 5119.917699999998,
+              "usage": {
+                "input_tokens": 290,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 346
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "1969–1974.",
+              "latencyMs": 1424.5881000000008,
+              "usage": {
+                "input_tokens": 2006,
+                "input_tokens_details": {
+                  "cache_write_tokens": 2003,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 2016
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "1969–1974",
+              "latencyMs": 1563.5119999999952,
+              "usage": {
+                "input_tokens": 253,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 262
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "1969–1974",
+              "latencyMs": 1880.7577999999994,
+              "usage": {
+                "input_tokens": 263,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 272
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Roger O. Egeberg → Richard Nixon → presidential term years\nevidence: “Roger O. Egeberg” identifies the president whose administration he served in; “Richard Nixon” supplies that president’s years in office.",
+            "forage": "1969–1974.",
+            "build": "1969–1974",
+            "verify": "1969–1974"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "1969–1974",
+          "endToEndLatencyMs": 3269.5864999999976,
+          "usage": {
+            "inputTokens": 2457,
+            "outputTokens": 38,
+            "reasoningTokens": 0,
+            "totalTokens": 2495,
+            "modelLatencyMs": 3266.967300000004
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"1969–1974\",\"confidence\":0.76,\"sources\":[\"Roger O. Egeberg\"]}",
+              "latencyMs": 1906.2215999999971,
+              "usage": {
+                "input_tokens": 635,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 29,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 664
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "1969–1974",
+              "latencyMs": 1360.7457000000068,
+              "usage": {
+                "input_tokens": 1822,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1819,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1831
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Roger O. Egeberg was Assistant Secretary for Health and Scientific Affairs during the administration of a president that served during what years?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 2457,
+              "outputTokens": 38,
+              "totalTokens": 2495,
+              "latencyMs": 3266.967300000004
+            },
+            "states": [
+              {
+                "answer": "1969–1974",
+                "confidence": 0.76,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "1969–1974",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:11:45.370Z",
+                "data": {
+                  "chars": 146,
+                  "scope": "mission:5ae0d4c9554299603e418468"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:11:45.370Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:11:45.371Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:45.371Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:47.277Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 635,
+                  "outputTokens": 29,
+                  "totalTokens": 664,
+                  "latencyMs": 1906.2215999999971
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:11:47.277Z",
+                "data": {
+                  "confidence": 0.76,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:47.278Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:48.639Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 2457,
+                  "outputTokens": 38,
+                  "totalTokens": 2495,
+                  "latencyMs": 3266.967300000004
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:11:48.639Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:11:48.639Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae0d4c9554299603e418468",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "1969–1974",
+            "confidence": 0.76,
+            "sources": [
+              "Roger O. Egeberg"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"1969–1974\",\"confidence\":0.76,\"sources\":[\"Roger O. Egeberg\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "directGpt56": {
+          "answer": "1969–1974",
+          "endToEndLatencyMs": 2046.5184999999983,
+          "usage": {
+            "inputTokens": 71,
+            "outputTokens": 9,
+            "reasoningTokens": 0,
+            "totalTokens": 80,
+            "modelLatencyMs": 2046.4969999999958
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "1969–1974",
+              "latencyMs": 2046.4969999999958,
+              "usage": {
+                "input_tokens": 71,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 80
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "ragGpt56": {
+          "answer": "1969–1974",
+          "endToEndLatencyMs": 1062.8945000000022,
+          "usage": {
+            "inputTokens": 597,
+            "outputTokens": 9,
+            "reasoningTokens": 0,
+            "totalTokens": 606,
+            "modelLatencyMs": 1061.6094999999987
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "1969–1974",
+              "latencyMs": 1061.6094999999987,
+              "usage": {
+                "input_tokens": 597,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 606
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 1.247400000000198,
+            "selectedTitles": [
+              "Roger O. Egeberg",
+              "Douglas J. Bennet",
+              "Steven K. Galson"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        }
+      }
+    },
+    {
+      "id": "5ab56e32554299637185c594",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Are Random House Tower and 888 7th Avenue both used for real estate?",
+      "expected": "no",
+      "executionOrder": [
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56",
+        "agentHive"
+      ],
+      "systems": {
+        "adaptiveMemoryHive": {
+          "answer": "yes",
+          "endToEndLatencyMs": 4554.8436,
+          "usage": {
+            "inputTokens": 4780,
+            "outputTokens": 37,
+            "reasoningTokens": 0,
+            "totalTokens": 4817,
+            "modelLatencyMs": 4550.674299999999
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Insufficient evidence—only Random House Tower is supported.\",\"confidence\":0.18,\"sources\":[\"Random House Tower\"]}",
+              "latencyMs": 2032.426800000001,
+              "usage": {
+                "input_tokens": 1915,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1912,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1946
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Yes.",
+              "latencyMs": 2518.2474999999977,
+              "usage": {
+                "input_tokens": 2865,
+                "input_tokens_details": {
+                  "cache_write_tokens": 2862,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 2871
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Are Random House Tower and 888 7th Avenue both used for real estate?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 4780,
+              "outputTokens": 37,
+              "totalTokens": 4817,
+              "latencyMs": 4550.674299999999
+            },
+            "states": [
+              {
+                "answer": "Insufficient evidence—only Random House Tower is supported.",
+                "confidence": 0.18,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "Yes.",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:11:51.753Z",
+                "data": {
+                  "chars": 68,
+                  "scope": "mission:5ab56e32554299637185c594"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:11:51.753Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:11:51.754Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:51.755Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:53.787Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 1915,
+                  "outputTokens": 31,
+                  "totalTokens": 1946,
+                  "latencyMs": 2032.426800000001
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:11:53.788Z",
+                "data": {
+                  "confidence": 0.18,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:11:53.788Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:11:56.307Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 4780,
+                  "outputTokens": 37,
+                  "totalTokens": 4817,
+                  "latencyMs": 4550.674299999999
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:11:56.307Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:11:56.307Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              },
+              {
+                "name": "on_output_sanitized",
+                "at": "2026-08-05T17:11:56.307Z",
+                "data": {
+                  "rule": "binary_answer_span"
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ab56e32554299637185c594",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 11,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Insufficient evidence—only Random House Tower is supported.",
+            "confidence": 0.18,
+            "sources": [
+              "Random House Tower"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Insufficient evidence—only Random House Tower is supported.\",\"confidence\":0.18,\"sources\":[\"Random House Tower\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "directGpt56": {
+          "answer": "Yes",
+          "endToEndLatencyMs": 1041.5309000000052,
+          "usage": {
+            "inputTokens": 62,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 67,
+            "modelLatencyMs": 1041.512999999999
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Yes",
+              "latencyMs": 1041.512999999999,
+              "usage": {
+                "input_tokens": 62,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 67
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1497.729999999996,
+          "usage": {
+            "inputTokens": 1877,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 1882,
+            "modelLatencyMs": 1495.6065999999919
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1495.6065999999919,
+              "usage": {
+                "input_tokens": 1877,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1874,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1882
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 2.0808000000033644,
+            "selectedTitles": [
+              "Real estate technology",
+              "Random House Tower",
+              "Loan modification in the United States"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Yes.",
+          "endToEndLatencyMs": 8338.8646,
+          "usage": {
+            "inputTokens": 3886,
+            "outputTokens": 122,
+            "reasoningTokens": 0,
+            "totalTokens": 4008,
+            "modelLatencyMs": 8338.363499999992
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Random House Tower; 888 7th Avenue\nevidence: Verify each building’s documented use in its respective corpus article; both must state real-estate use.\nblockers: Corpus text not supplied, only titles.\nspent",
+              "latencyMs": 4227.2544999999955,
+              "usage": {
+                "input_tokens": 280,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 336
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: yes\nartifacts: Random House Tower; 888 7th Avenue\nevidence: “Random House Tower” — mixed-use headquarters and luxury apartments; “888 7th Avenue” — office skyscraper.\nblockers: none",
+              "latencyMs": 1830.4600999999966,
+              "usage": {
+                "input_tokens": 3040,
+                "input_tokens_details": {
+                  "cache_write_tokens": 3037,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 54,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 3094
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Yes.",
+              "latencyMs": 991.1722000000009,
+              "usage": {
+                "input_tokens": 279,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 285
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Yes.",
+              "latencyMs": 1289.4766999999993,
+              "usage": {
+                "input_tokens": 287,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 293
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Random House Tower; 888 7th Avenue\nevidence: Verify each building’s documented use in its respective corpus article; both must state real-estate use.\nblockers: Corpus text not supplied, only titles.\nspent",
+            "forage": "status: yes\nartifacts: Random House Tower; 888 7th Avenue\nevidence: “Random House Tower” — mixed-use headquarters and luxury apartments; “888 7th Avenue” — office skyscraper.\nblockers: none",
+            "build": "Yes.",
+            "verify": "Yes."
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "5a7cc50e554299452d57ba3e",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Which band, Letters to Cleo or Screaming Trees, had more members?",
+      "expected": "Letters to Cleo",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "Screaming Trees",
+          "endToEndLatencyMs": 2079.5417000000016,
+          "usage": {
+            "inputTokens": 61,
+            "outputTokens": 8,
+            "reasoningTokens": 0,
+            "totalTokens": 69,
+            "modelLatencyMs": 2079.511200000008
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Screaming Trees",
+              "latencyMs": 2079.511200000008,
+              "usage": {
+                "input_tokens": 61,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 69
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "ragGpt56": {
+          "answer": "Letters to Cleo",
+          "endToEndLatencyMs": 9089.654599999994,
+          "usage": {
+            "inputTokens": 583,
+            "outputTokens": 8,
+            "reasoningTokens": 0,
+            "totalTokens": 591,
+            "modelLatencyMs": 9088.633199999997
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Letters to Cleo",
+              "latencyMs": 9088.633199999997,
+              "usage": {
+                "input_tokens": 583,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 591
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.959499999997206,
+            "selectedTitles": [
+              "Letters to Cleo",
+              "Jamboree (Beat Happening album)",
+              "Van Conner"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "Letters to Cleo",
+          "endToEndLatencyMs": 8199.326000000001,
+          "usage": {
+            "inputTokens": 2603,
+            "outputTokens": 131,
+            "reasoningTokens": 0,
+            "totalTokens": 2734,
+            "modelLatencyMs": 8198.948399999994
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Letters to Cleo member count, Screaming Trees member count, comparison]\nevidence: Use each band’s article to enumerate/count listed members; compare totals.\nblockers: Corpus excerpts absent.\nspent: 25\nre",
+              "latencyMs": 3700.553700000004,
+              "usage": {
+                "input_tokens": 270,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 326
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: complete; artifacts: Letters to Cleo—6 members; Screaming Trees—5 members; evidence: “Letters to Cleo”; “Screaming Trees”; blockers: none; spent: 6; reusable_context: Letters to Cleo had more members.",
+              "latencyMs": 2173.8655,
+              "usage": {
+                "input_tokens": 1760,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1757,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 59,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1819
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Letters to Cleo",
+              "latencyMs": 1216.9942999999912,
+              "usage": {
+                "input_tokens": 282,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 290
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Letters to Cleo",
+              "latencyMs": 1107.5348999999987,
+              "usage": {
+                "input_tokens": 291,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 8,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 299
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Letters to Cleo member count, Screaming Trees member count, comparison]\nevidence: Use each band’s article to enumerate/count listed members; compare totals.\nblockers: Corpus excerpts absent.\nspent: 25\nre",
+            "forage": "status: complete; artifacts: Letters to Cleo—6 members; Screaming Trees—5 members; evidence: “Letters to Cleo”; “Screaming Trees”; blockers: none; spent: 6; reusable_context: Letters to Cleo had more members.",
+            "build": "Letters to Cleo",
+            "verify": "Letters to Cleo"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Letters to Cleo",
+          "endToEndLatencyMs": 5123.39360000001,
+          "usage": {
+            "inputTokens": 621,
+            "outputTokens": 30,
+            "reasoningTokens": 0,
+            "totalTokens": 651,
+            "modelLatencyMs": 5121.085399999996
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Letters to Cleo\",\"confidence\":0.98,\"sources\":[\"Letters to Cleo\",\"Van Conner\"]}",
+              "latencyMs": 5121.085399999996,
+              "usage": {
+                "input_tokens": 621,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 30,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 651
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Which band, Letters to Cleo or Screaming Trees, had more members?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 621,
+              "outputTokens": 30,
+              "totalTokens": 651,
+              "latencyMs": 5121.085399999996
+            },
+            "states": [
+              {
+                "answer": "Letters to Cleo",
+                "confidence": 0.98,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:12:26.557Z",
+                "data": {
+                  "chars": 65,
+                  "scope": "mission:5a7cc50e554299452d57ba3e"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:12:26.558Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:12:26.559Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:12:26.559Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:12:31.680Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 621,
+                  "outputTokens": 30,
+                  "totalTokens": 651,
+                  "latencyMs": 5121.085399999996
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:12:31.681Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 0.98,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:12:31.681Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a7cc50e554299452d57ba3e",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 7,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "Letters to Cleo",
+            "confidence": 0.98,
+            "sources": [
+              "Letters to Cleo",
+              "Van Conner"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Letters to Cleo\",\"confidence\":0.98,\"sources\":[\"Letters to Cleo\",\"Van Conner\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ae4a3265542995ad6573de5",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Hayden is a singer-songwriter from Canada, but where does Buck-Tick hail from?",
+      "expected": "Fujioka, Gunma",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 1044.321299999996,
+          "usage": {
+            "inputTokens": 418,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 423,
+            "modelLatencyMs": 1043.8343000000023
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Japan",
+              "latencyMs": 1043.8343000000023,
+              "usage": {
+                "input_tokens": 418,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 423
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.4510000000009313,
+            "selectedTitles": [
+              "Hayden (musician)",
+              "Hailstorm Alley",
+              "Atsushi Sakurai"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Fujioka, Gunma, Japan.",
+          "endToEndLatencyMs": 7415.040699999998,
+          "usage": {
+            "inputTokens": 2242,
+            "outputTokens": 95,
+            "reasoningTokens": 0,
+            "totalTokens": 2337,
+            "modelLatencyMs": 7414.592200000028
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Hayden (musician), Buck-Tick]\nevidence: Hayden identifies the Canadian singer-songwriter; Buck-Tick states the band’s place of origin.\nblockers: corpus text not supplied\nspent: 24 words",
+              "latencyMs": 2449.010100000014,
+              "usage": {
+                "input_tokens": 271,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 327
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Fujioka, Gunma, Japan.",
+              "latencyMs": 2857.669099999999,
+              "usage": {
+                "input_tokens": 1481,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1478,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 13,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1494
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Fujioka, Gunma, Japan.",
+              "latencyMs": 1101.934300000008,
+              "usage": {
+                "input_tokens": 238,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 13,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 251
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Fujioka, Gunma, Japan.",
+              "latencyMs": 1005.9787000000069,
+              "usage": {
+                "input_tokens": 252,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 13,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 265
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Hayden (musician), Buck-Tick]\nevidence: Hayden identifies the Canadian singer-songwriter; Buck-Tick states the band’s place of origin.\nblockers: corpus text not supplied\nspent: 24 words",
+            "forage": "Fujioka, Gunma, Japan.",
+            "build": "Fujioka, Gunma, Japan.",
+            "verify": "Fujioka, Gunma, Japan."
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Fujioka, Gunma, Japan",
+          "endToEndLatencyMs": 3791.936799999996,
+          "usage": {
+            "inputTokens": 1760,
+            "outputTokens": 43,
+            "reasoningTokens": 0,
+            "totalTokens": 1803,
+            "modelLatencyMs": 3789.1895000000077
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Japan\",\"confidence\":0.86,\"sources\":[\"Hayden (musician)\",\"Atsushi Sakurai\"]}",
+              "latencyMs": 2078.790000000008,
+              "usage": {
+                "input_tokens": 455,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 486
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Fujioka, Gunma, Japan",
+              "latencyMs": 1710.3994999999995,
+              "usage": {
+                "input_tokens": 1305,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1302,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 12,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1317
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Hayden is a singer-songwriter from Canada, but where does Buck-Tick hail from?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1760,
+              "outputTokens": 43,
+              "totalTokens": 1803,
+              "latencyMs": 3789.1895000000077
+            },
+            "states": [
+              {
+                "answer": "Japan",
+                "confidence": 0.86,
+                "evidenceCount": 2,
+                "conflict": false
+              },
+              {
+                "answer": "Fujioka, Gunma, Japan",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:12:40.144Z",
+                "data": {
+                  "chars": 78,
+                  "scope": "mission:5ae4a3265542995ad6573de5"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:12:40.144Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:12:40.144Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:12:40.145Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:12:42.223Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 455,
+                  "outputTokens": 31,
+                  "totalTokens": 486,
+                  "latencyMs": 2078.790000000008
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:12:42.224Z",
+                "data": {
+                  "confidence": 0.86,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:12:42.224Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:12:43.935Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1760,
+                  "outputTokens": 43,
+                  "totalTokens": 1803,
+                  "latencyMs": 3789.1895000000077
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:12:43.935Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:12:43.935Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae4a3265542995ad6573de5",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Japan",
+            "confidence": 0.86,
+            "sources": [
+              "Hayden (musician)",
+              "Atsushi Sakurai"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Japan\",\"confidence\":0.86,\"sources\":[\"Hayden (musician)\",\"Atsushi Sakurai\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8,
+            "exactLoss": 1,
+            "taskLoss": 0.19999999999999996
+          }
+        },
+        "directGpt56": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 1421.4646999999968,
+          "usage": {
+            "inputTokens": 63,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 68,
+            "modelLatencyMs": 1421.4416000000056
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Japan",
+              "latencyMs": 1421.4416000000056,
+              "usage": {
+                "input_tokens": 63,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 68
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    }
+  ]
+}

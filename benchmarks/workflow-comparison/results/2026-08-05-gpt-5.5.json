@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T21:10:00+03:00",
+  "fixture": "dependency-free JavaScript token-bucket rate limiter",
+  "host": "codex-cli 0.130.0",
+  "model": "gpt-5.5",
+  "reasoningEffort": "medium",
+  "pins": {
+    "caveman": "ec83e5bace4c20484d704dea21e12fc4eb94e9aa",
+    "ralphLoop": "eba65ebbb0a78c4a7fd25aab28e94966eddbca5b",
+    "loopEngineering": "eb4b4061895d6981936add1611acbf116ab76f8f",
+    "agentHiveInitial": "0.1.0",
+    "agentHiveForwardTest": "0.2.0"
+  },
+  "artifact": {
+    "normal": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 101 },
+    "caveman": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 105 },
+    "ralph": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 107 },
+    "loopEngineering": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 88 },
+    "agentHiveInitial": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 127 },
+    "agentHiveCompact": { "score": 40, "publicPassed": true, "hiddenPassed": 12, "hiddenTotal": 12, "securityScore": 10, "sourceLines": 112 }
+  },
+  "liveMeasurements": {
+    "normal": { "turns": 1, "elapsedMs": 79644, "inputTokens": 168464, "cachedInputTokens": 144000, "uncachedInputTokens": 24464, "outputTokens": 2334, "reasoningTokens": 284, "outputAndReasoningTokens": 2618, "agentMessageChars": 1394 },
+    "caveman": { "turns": 1, "elapsedMs": 78433, "inputTokens": 152206, "cachedInputTokens": 129280, "uncachedInputTokens": 22926, "outputTokens": 2554, "reasoningTokens": 497, "outputAndReasoningTokens": 3051, "agentMessageChars": 863 },
+    "ralph": { "turns": 2, "elapsedMs": 161150, "inputTokens": 401340, "cachedInputTokens": 350592, "uncachedInputTokens": 50748, "outputTokens": 4397, "reasoningTokens": 1145, "outputAndReasoningTokens": 5542 },
+    "loopEngineering": { "turns": 2, "elapsedMs": 163857, "inputTokens": 420114, "cachedInputTokens": 391552, "uncachedInputTokens": 28562, "outputTokens": 5386, "reasoningTokens": 1418, "outputAndReasoningTokens": 6804 },
+    "agentHiveInitial": { "turns": 3, "elapsedMs": 320765, "inputTokens": 632236, "cachedInputTokens": 562560, "uncachedInputTokens": 69676, "outputTokens": 10559, "reasoningTokens": 1462, "outputAndReasoningTokens": 12021 },
+    "agentHiveCompact": { "turns": 2, "elapsedMs": 340237, "inputTokens": 369033, "cachedInputTokens": 326272, "uncachedInputTokens": 42761, "outputTokens": 5702, "reasoningTokens": 1418, "outputAndReasoningTokens": 7120 }
+  },
+  "efficiencyScores": {
+    "normal": 19.16,
+    "caveman": 19.29,
+    "ralph": 8.98,
+    "loopEngineering": 10.18,
+    "agentHiveInitial": 5.34,
+    "agentHiveCompactForwardTest": 8.27
+  },
+  "capabilityAuditAsRun": {
+    "normal": { "securityAndGuardrails": 0, "monitoring": 0, "memoryAndContext": 0 },
+    "caveman": { "securityAndGuardrails": 1, "monitoring": 3, "memoryAndContext": 3 },
+    "ralph": { "securityAndGuardrails": 12, "monitoring": 7, "memoryAndContext": 5 },
+    "loopEngineering": { "securityAndGuardrails": 20, "monitoring": 10, "memoryAndContext": 9 },
+    "agentHiveInitial": { "securityAndGuardrails": 6, "monitoring": 7, "memoryAndContext": 5 }
+  },
+  "compositeAsRun": {
+    "normal": 59.16,
+    "caveman": 66.29,
+    "ralph": 72.98,
+    "loopEngineering": 89.18,
+    "agentHiveInitial": 63.34
+  },
+  "agentHiveForwardTest": {
+    "profile": "builder -> guard",
+    "qualityChange": 0,
+    "inputTokenReductionPercentVersusInitialHive": 41.63,
+    "uncachedInputReductionPercentVersusInitialHive": 38.63,
+    "outputAndReasoningReductionPercentVersusInitialHive": 40.77,
+    "latencyChangePercentVersusInitialHive": 6.07,
+    "currentCapabilityAudit": { "securityAndGuardrails": 15, "monitoring": 10, "memoryAndContext": 10 },
+    "indicativeComposite": 83.27,
+    "note": "The forward test is a later single run. Its token improvement is observed; its composite is not substituted into the original five-arm ranking."
+  },
+  "sharedHostBaseline": {
+    "sandbox": "Codex workspace-write sandbox used for every live arm",
+    "scoring": "Excluded from method-owned capability scores"
+  },
+  "limitations": [
+    "One fixture and one live sample per primary arm; differences may include run-order and provider-cache variance.",
+    "Provider input fields are cumulative across tool-driven turns and are not context-window sizes.",
+    "Cached input is reported separately and is not assumed to be free.",
+    "Static capability audits measure repository behavior and documented runtime controls; not every feature was exercised in the small coding fixture.",
+    "Claude Code was not run because its local OAuth credential had expired.",
+    "The installed Codex CLI could not invoke GPT-5.6, so every live arm used GPT-5.5."
+  ]
+}

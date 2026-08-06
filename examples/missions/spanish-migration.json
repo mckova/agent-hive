@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "mission": {
+    "goal": "Migrar el servicio de pagos sin interrumpir las solicitudes activas",
+    "sourceLanguage": "es",
+    "responseLanguage": "es",
+    "must": ["mantener compatibilidad con payment_id", "añadir una ruta de reversión"],
+    "avoid": ["cambios destructivos en la base de datos"],
+    "doneWhen": ["las pruebas de regresión pasan", "la migración puede revertirse"]
+  },
+  "budget": { "unit": "tokens", "total": 110000, "reservePercent": 25 },
+  "policy": { "maxWorkers": 2, "qualityFloor": "balanced" },
+  "models": {},
+  "cells": []
+}

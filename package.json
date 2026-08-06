@@ -1,0 +1,31 @@
+{
+  "name": "agent-hive-workspace",
+  "version": "0.3.0",
+  "private": true,
+  "description": "A multilingual, budget-aware guarded runner for Codex and Claude Code agent hives.",
+  "author": "mckova",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mckova/agent-hive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mckova/agent-hive/issues"
+  },
+  "homepage": "https://github.com/mckova/agent-hive#readme",
+  "type": "module",
+  "bin": {
+    "hive": "./bin/hive.mjs"
+  },
+  "scripts": {
+    "hive": "node ./bin/hive.mjs",
+    "benchmark:hive-oracle": "node ./benchmarks/hive-oracle/benchmark.mjs",
+    "sync:plugins": "node ./scripts/sync-plugin-runtime.mjs",
+    "benchmark": "node ./scripts/benchmark.mjs",
+    "test": "node --test",
+    "validate": "node ./scripts/validate-repo.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

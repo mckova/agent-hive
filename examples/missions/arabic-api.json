@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "mission": {
+    "goal": "إنشاء واجهة API لإدارة المهام مع سجل تدقيق",
+    "sourceLanguage": "ar",
+    "responseLanguage": "ar",
+    "must": ["الحفاظ على الحقل user_id كما هو", "إضافة اختبارات تكامل"],
+    "avoid": ["تخزين كلمات المرور كنص صريح"],
+    "doneWhen": ["تمر جميع الاختبارات", "توثيق نقاط النهاية"]
+  },
+  "budget": { "unit": "tokens", "total": 90000, "reservePercent": 20 },
+  "policy": { "maxWorkers": 3, "qualityFloor": "economy" },
+  "models": {},
+  "cells": []
+}

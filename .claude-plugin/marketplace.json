@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "agent-hive-marketplace",
+  "description": "Multilingual, budget-aware agent workflows for Claude Code.",
+  "owner": { "name": "mckova" },
+  "plugins": [
+    {
+      "name": "agent-hive",
+      "source": "./plugins/claude-code/agent-hive",
+      "description": "Budget-aware multilingual agent orchestration with guardrails, memory, and telemetry for Claude Code.",
+      "version": "0.3.0",
+      "author": { "name": "mckova" },
+      "category": "development",
+      "tags": ["agents", "budget", "multilingual", "tokens"]
+    }
+  ]
+}

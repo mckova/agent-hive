@@ -1,0 +1,6 @@
+{
+  "cells": {
+    "survey": { "used": 11000, "status": "done" },
+    "build": { "used": 35000, "status": "in_progress" }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-hive.dev/schemas/usage.schema.json",
+  "title": "Agent Hive Usage Ledger",
+  "type": "object",
+  "required": ["schemaVersion", "updatedAt", "cells"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "cells": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "used"],
+        "properties": {
+          "status": { "enum": ["pending", "in_progress", "done", "partial", "blocked", "failed"] },
+          "used": { "type": "integer", "minimum": 0 },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "modelCalls": { "type": "integer", "minimum": 0 },
+              "inputTokens": { "type": "integer", "minimum": 0 },
+              "cachedInputTokens": { "type": "integer", "minimum": 0 },
+              "outputTokens": { "type": "integer", "minimum": 0 },
+              "reasoningTokens": { "type": "integer", "minimum": 0 },
+              "latencyMs": { "type": "integer", "minimum": 0 },
+              "costUsd": { "type": "number", "minimum": 0 }
+            },
+            "additionalProperties": false
+          },
+          "artifacts": { "$ref": "#/$defs/stringList" },
+          "evidence": { "$ref": "#/$defs/stringList" },
+          "blockers": { "$ref": "#/$defs/stringList" },
+          "reusableContext": { "$ref": "#/$defs/stringList" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stringList": { "type": "array", "items": { "type": "string" } }
+  }
+}

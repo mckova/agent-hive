@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "mission": {
+    "goal": "Préparer puis déployer une version vérifiée du service",
+    "sourceLanguage": "fr",
+    "responseLanguage": "fr",
+    "must": ["exécuter les tests avant le déploiement", "conserver une preuve vérifiable"],
+    "avoid": ["modifier les secrets", "déployer sans approbation humaine"],
+    "doneWhen": ["les tests passent", "le déploiement approuvé est confirmé"]
+  },
+  "budget": { "unit": "tokens", "total": 60000, "reservePercent": 20 },
+  "policy": { "maxWorkers": 1, "qualityFloor": "economy" },
+  "guardrails": {
+    "allowedPathPrefixes": ["src", "test"],
+    "deniedPathPrefixes": [".env", ".git", "secrets", "credentials"],
+    "allowNetwork": false,
+    "humanApprovalActions": ["delete", "push", "deploy", "external-write"],
+    "maxAttemptsPerCell": 2,
+    "trustedInstructionSources": ["mission", "cell"]
+  },
+  "models": {},
+  "cells": [
+    {
+      "id": "build",
+      "title": "Préparer la version et exécuter les tests ciblés",
+      "role": "builder",
+      "priority": 5,
+      "complexity": 3,
+      "risk": 3,
+      "dependencies": [],
+      "required": true,
+      "actions": ["write"],
+      "paths": ["src", "test"]
+    },
+    {
+      "id": "verify",
+      "title": "Vérifier les critères, les tests et la sécurité",
+      "role": "guard",
+      "priority": 5,
+      "complexity": 3,
+      "risk": 5,
+      "dependencies": ["build"],
+      "required": true,
+      "actions": ["read"],
+      "paths": ["src", "test"]
+    },
+    {
+      "id": "deploy",
+      "title": "Déployer uniquement après approbation humaine",
+      "role": "builder",
+      "priority": 4,
+      "complexity": 2,
+      "risk": 5,
+      "dependencies": ["verify"],
+      "required": true,
+      "actions": ["deploy"],
+      "paths": ["src"]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "mission": {
+    "goal": "既存のログイン機能を壊さずに、パスワード再設定フローを追加する",
+    "sourceLanguage": "ja",
+    "responseLanguage": "ja",
+    "must": [
+      "ワンタイムトークンをメールで送信する",
+      "トークンは15分後に失効する",
+      "統合テストを追加する"
+    ],
+    "avoid": [
+      "既存のログインAPIを変更しない"
+    ],
+    "doneWhen": [
+      "認証テストスイートが成功する",
+      "使用済みトークンを再利用できない"
+    ]
+  },
+  "budget": {
+    "unit": "tokens",
+    "total": 120000,
+    "reservePercent": 20
+  },
+  "policy": {
+    "maxWorkers": 2,
+    "qualityFloor": "economy"
+  },
+  "cells": [
+    {
+      "id": "survey",
+      "title": "認証フローと関連ファイルを特定する",
+      "role": "scout",
+      "priority": 5,
+      "complexity": 2,
+      "risk": 2,
+      "dependencies": [],
+      "required": true
+    },
+    {
+      "id": "build",
+      "title": "パスワード再設定を実装する",
+      "role": "builder",
+      "priority": 5,
+      "complexity": 4,
+      "risk": 4,
+      "dependencies": ["survey"],
+      "required": true
+    },
+    {
+      "id": "verify",
+      "title": "セキュリティ要件と回帰テストを検証する",
+      "role": "guard",
+      "priority": 5,
+      "complexity": 3,
+      "risk": 5,
+      "dependencies": ["build"],
+      "required": true
+    }
+  ]
+}

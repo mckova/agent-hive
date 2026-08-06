@@ -1,0 +1,2692 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T17:13:55.275Z",
+  "oracle": {
+    "question": "Does Agent Hive improve answer quality enough to justify its latency and token cost?",
+    "dataset": "hotpotqa/hotpot_qa",
+    "config": "distractor",
+    "split": "validation",
+    "examples": 6,
+    "seed": 99173,
+    "excludedIds": [
+      "5a8c7595554299585d9e36b6",
+      "5a85fb085542994775f606de",
+      "5a8f4c8d554299458435d5a3",
+      "5ab51dae5542991779162d82",
+      "5ae2070a5542994d89d5b313",
+      "5ae4a3265542995ad6573de5"
+    ],
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "none",
+    "outputTokenBudgetPerSystem": 416,
+    "rag": "local BM25 top-3 + one gpt-5.6-sol call",
+    "hive": "scout -> forager -> builder -> guard; every cell uses gpt-5.6-sol",
+    "adaptiveMemoryHive": "scoped evidence memory + goal controller + hooks + early stop + at most one guard repair; every model call uses gpt-5.6-sol",
+    "loss": "taskLoss = 1 - HotpotQA token F1; exactLoss = 1 - exact match"
+  },
+  "methods": {
+    "directGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0.5,
+      "tokenF1": 0.7053571428571429,
+      "exactLoss": 0.5,
+      "taskLoss": 0.29464285714285715,
+      "averageEndToEndLatencyMs": 1847.633450000003,
+      "p50EndToEndLatencyMs": 1639.888,
+      "usage": {
+        "inputTokens": 375,
+        "outputTokens": 55,
+        "reasoningTokens": 0,
+        "totalTokens": 430
+      },
+      "averageTokensPerExample": 71.66666666666667
+    },
+    "ragGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0.3333333333333333,
+      "tokenF1": 0.48717948717948717,
+      "exactLoss": 0.6666666666666666,
+      "taskLoss": 0.5128205128205129,
+      "averageEndToEndLatencyMs": 1320.4039499999997,
+      "p50EndToEndLatencyMs": 1367.7127000000037,
+      "usage": {
+        "inputTokens": 2906,
+        "outputTokens": 46,
+        "reasoningTokens": 0,
+        "totalTokens": 2952
+      },
+      "averageTokensPerExample": 492
+    },
+    "agentHive": {
+      "examples": 6,
+      "calls": 24,
+      "exactMatch": 0.5,
+      "tokenF1": 0.8201058201058201,
+      "exactLoss": 0.5,
+      "taskLoss": 0.1798941798941799,
+      "averageEndToEndLatencyMs": 9524.39615,
+      "p50EndToEndLatencyMs": 8451.7301,
+      "usage": {
+        "inputTokens": 13878,
+        "outputTokens": 630,
+        "reasoningTokens": 0,
+        "totalTokens": 14508
+      },
+      "averageTokensPerExample": 2418
+    },
+    "adaptiveMemoryHive": {
+      "examples": 6,
+      "calls": 10,
+      "exactMatch": 0.8333333333333334,
+      "tokenF1": 0.9761904761904762,
+      "exactLoss": 0.16666666666666666,
+      "taskLoss": 0.02380952380952382,
+      "averageEndToEndLatencyMs": 2898.3308666666685,
+      "p50EndToEndLatencyMs": 2943.2592000000004,
+      "usage": {
+        "inputTokens": 8515,
+        "outputTokens": 232,
+        "reasoningTokens": 0,
+        "totalTokens": 8747
+      },
+      "averageTokensPerExample": 1457.8333333333333
+    }
+  },
+  "examples": [
+    {
+      "id": "5a8979f4554299669944a52e",
+      "type": "bridge",
+      "level": "hard",
+      "question": "What is the middle name of the actress who plays Bobbi Bacha in Suburban Madness?",
+      "expected": "Ann",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "Denise",
+          "endToEndLatencyMs": 1639.888,
+          "usage": {
+            "inputTokens": 64,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 70,
+            "modelLatencyMs": 1639.7264
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Denise",
+              "latencyMs": 1639.7264,
+              "usage": {
+                "input_tokens": 64,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 70
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1376.6703000000002,
+          "usage": {
+            "inputTokens": 356,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 361,
+            "modelLatencyMs": 1375.3154999999997
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1375.3154999999997,
+              "usage": {
+                "input_tokens": 356,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 361
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 1.2958000000003267,
+            "selectedTitles": [
+              "Bobbi Bacha",
+              "Suburban Madness",
+              "Chris Funk"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Ann",
+          "endToEndLatencyMs": 7096.190599999999,
+          "usage": {
+            "inputTokens": 2121,
+            "outputTokens": 71,
+            "reasoningTokens": 0,
+            "totalTokens": 2192,
+            "modelLatencyMs": 7093.898999999999
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Suburban Madness → actress portraying Bobbi Bacha; actress biography → full name/middle name]\nevidence: [\"Suburban Madness\", \"Bobbi Bacha\", relevant actress-title document]\nblockers: corpus text not",
+              "latencyMs": 2148.1966999999995,
+              "usage": {
+                "input_tokens": 259,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 315
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Ann",
+              "latencyMs": 2106.3722000000007,
+              "usage": {
+                "input_tokens": 1387,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1384,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1392
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Ann",
+              "latencyMs": 1749.6846999999998,
+              "usage": {
+                "input_tokens": 234,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 239
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Ann",
+              "latencyMs": 1089.6453999999994,
+              "usage": {
+                "input_tokens": 241,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 246
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Suburban Madness → actress portraying Bobbi Bacha; actress biography → full name/middle name]\nevidence: [\"Suburban Madness\", \"Bobbi Bacha\", relevant actress-title document]\nblockers: corpus text not",
+            "forage": "Ann",
+            "build": "Ann",
+            "verify": "Ann"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Ann",
+          "endToEndLatencyMs": 3306.7319000000007,
+          "usage": {
+            "inputTokens": 1598,
+            "outputTokens": 32,
+            "reasoningTokens": 0,
+            "totalTokens": 1630,
+            "modelLatencyMs": 3280.128999999999
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Unknown\",\"confidence\":0.0,\"sources\":[\"Bobbi Bacha\",\"Suburban Madness\"]}",
+              "latencyMs": 2026.7416999999987,
+              "usage": {
+                "input_tokens": 394,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 27,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 421
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Ann",
+              "latencyMs": 1253.3873000000003,
+              "usage": {
+                "input_tokens": 1204,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1201,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1209
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: What is the middle name of the actress who plays Bobbi Bacha in Suburban Madness?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1598,
+              "outputTokens": 32,
+              "totalTokens": 1630,
+              "latencyMs": 3280.128999999999
+            },
+            "states": [
+              {
+                "answer": "Unknown",
+                "confidence": 0,
+                "evidenceCount": 2,
+                "conflict": false
+              },
+              {
+                "answer": "Ann",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:14:05.391Z",
+                "data": {
+                  "chars": 81,
+                  "scope": "mission:5a8979f4554299669944a52e"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:14:05.392Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:14:05.393Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:05.394Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:07.421Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 394,
+                  "outputTokens": 27,
+                  "totalTokens": 421,
+                  "latencyMs": 2026.7416999999987
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:14:07.422Z",
+                "data": {
+                  "confidence": 0,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:07.442Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:08.696Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1598,
+                  "outputTokens": 32,
+                  "totalTokens": 1630,
+                  "latencyMs": 3280.128999999999
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:14:08.696Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:14:08.696Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a8979f4554299669944a52e",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Unknown",
+            "confidence": 0,
+            "sources": [
+              "Bobbi Bacha",
+              "Suburban Madness"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Unknown\",\"confidence\":0.0,\"sources\":[\"Bobbi Bacha\",\"Suburban Madness\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ae32e125542991a06ce9946",
+      "type": "bridge",
+      "level": "hard",
+      "question": "According to the 2001 census, what was the population of the city in which Kirton End is located?",
+      "expected": "35,124",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1098.5450999999994,
+          "usage": {
+            "inputTokens": 579,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 584,
+            "modelLatencyMs": 1097.6211999999996
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1097.6211999999996,
+              "usage": {
+                "input_tokens": 579,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 584
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.8887999999988097,
+            "selectedTitles": [
+              "Parkridge, Saskatoon",
+              "Sauce Viejo, Argentina",
+              "Kirton, Nottinghamshire"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "35,124",
+          "endToEndLatencyMs": 6224.868900000001,
+          "usage": {
+            "inputTokens": 2470,
+            "outputTokens": 77,
+            "reasoningTokens": 0,
+            "totalTokens": 2547,
+            "modelLatencyMs": 6224.130199999996
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Kirton End → Boston, Lincolnshire; Boston 2001 census population\nevidence: Use “Kirton End” to establish its city as Boston, then “Boston, Lincolnshire” for the 2001 census figure",
+              "latencyMs": 1811.0541999999987,
+              "usage": {
+                "input_tokens": 285,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 341
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "35,124",
+              "latencyMs": 1600.6556999999993,
+              "usage": {
+                "input_tokens": 1688,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1685,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1695
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "35,124",
+              "latencyMs": 1118.1512000000002,
+              "usage": {
+                "input_tokens": 244,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 251
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "35,124",
+              "latencyMs": 1694.2690999999977,
+              "usage": {
+                "input_tokens": 253,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 260
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Kirton End → Boston, Lincolnshire; Boston 2001 census population\nevidence: Use “Kirton End” to establish its city as Boston, then “Boston, Lincolnshire” for the 2001 census figure",
+            "forage": "35,124",
+            "build": "35,124",
+            "verify": "35,124"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "35,124",
+          "endToEndLatencyMs": 3091.2309000000023,
+          "usage": {
+            "inputTokens": 2110,
+            "outputTokens": 23,
+            "reasoningTokens": 0,
+            "totalTokens": 2133,
+            "modelLatencyMs": 3088.900700000002
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"\",\"confidence\":0.0,\"sources\":[]}",
+              "latencyMs": 2173.6921,
+              "usage": {
+                "input_tokens": 617,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 16,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 633
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "35,124",
+              "latencyMs": 915.2086000000018,
+              "usage": {
+                "input_tokens": 1493,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1490,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1500
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: According to the 2001 census, what was the population of the city in which Kirton End is located?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 2110,
+              "outputTokens": 23,
+              "totalTokens": 2133,
+              "latencyMs": 3088.900700000002
+            },
+            "states": [
+              {
+                "answer": "",
+                "confidence": 0,
+                "evidenceCount": 0,
+                "conflict": false
+              },
+              {
+                "answer": "35,124",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:14:16.027Z",
+                "data": {
+                  "chars": 97,
+                  "scope": "mission:5ae32e125542991a06ce9946"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:14:16.027Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:14:16.028Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:16.029Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:18.202Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 617,
+                  "outputTokens": 16,
+                  "totalTokens": 633,
+                  "latencyMs": 2173.6921
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:14:18.203Z",
+                "data": {
+                  "confidence": 0,
+                  "evidenceCount": 0
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:18.203Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:19.118Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 2110,
+                  "outputTokens": 23,
+                  "totalTokens": 2133,
+                  "latencyMs": 3088.900700000002
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:14:19.118Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:14:19.118Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae32e125542991a06ce9946",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "",
+            "confidence": 0,
+            "sources": [],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"\",\"confidence\":0.0,\"sources\":[]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "35,124",
+          "endToEndLatencyMs": 1565.817500000001,
+          "usage": {
+            "inputTokens": 68,
+            "outputTokens": 7,
+            "reasoningTokens": 0,
+            "totalTokens": 75,
+            "modelLatencyMs": 1565.8042999999998
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "35,124",
+              "latencyMs": 1565.8042999999998,
+              "usage": {
+                "input_tokens": 68,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 7,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 75
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ab96ab755429970cfb8eacd",
+      "type": "bridge",
+      "level": "hard",
+      "question": "Ellie Goulding worked with what other writers on her third studio album, Delirium?",
+      "expected": "Max Martin, Savan Kotecha and Ilya Salmanzadeh",
+      "executionOrder": [
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56"
+      ],
+      "systems": {
+        "agentHive": {
+          "answer": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami.",
+          "endToEndLatencyMs": 8488.073600000003,
+          "usage": {
+            "inputTokens": 2576,
+            "outputTokens": 150,
+            "reasoningTokens": 0,
+            "totalTokens": 2726,
+            "modelLatencyMs": 8487.523400000002
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: sufficient; artifacts: Delirium (Ellie Goulding album); evidence: album background/development passage naming Goulding’s co-writers; blockers: corpus text not supplied; spent: 31; reusable_context: consult the Delirium album article",
+              "latencyMs": 2443.9141999999993,
+              "usage": {
+                "input_tokens": 302,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 358
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami. — “Love Me like You Do”",
+              "latencyMs": 1462.851200000001,
+              "usage": {
+                "input_tokens": 1717,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1714,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 37,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1754
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami",
+              "latencyMs": 2533.7528999999995,
+              "usage": {
+                "input_tokens": 264,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 28,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 292
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami.",
+              "latencyMs": 2047.0051000000021,
+              "usage": {
+                "input_tokens": 293,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 29,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 322
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: sufficient; artifacts: Delirium (Ellie Goulding album); evidence: album background/development passage naming Goulding’s co-writers; blockers: corpus text not supplied; spent: 31; reusable_context: consult the Delirium album article",
+            "forage": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami. — “Love Me like You Do”",
+            "build": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami",
+            "verify": "Savan Kotecha, Ilya Salmanzadeh, Tove Lo, Max Martin, and Ali Payami."
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.7777777777777778,
+            "exactLoss": 1,
+            "taskLoss": 0.2222222222222222
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Max Martin, Savan Kotecha, and Ilya Salmanzadeh",
+          "endToEndLatencyMs": 3801.101300000002,
+          "usage": {
+            "inputTokens": 2232,
+            "outputTokens": 64,
+            "reasoningTokens": 0,
+            "totalTokens": 2296,
+            "modelLatencyMs": 3799.2065000000002
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Max Martin, Savan Kotecha, and Ilya Salmanzadeh\",\"confidence\":0.83,\"sources\":[\"On My Mind (Ellie Goulding song)\"]}",
+              "latencyMs": 2576.1166999999987,
+              "usage": {
+                "input_tokens": 678,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 44,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 722
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Max Martin, Savan Kotecha, and Ilya Salmanzadeh",
+              "latencyMs": 1223.0898000000016,
+              "usage": {
+                "input_tokens": 1554,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1551,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 20,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1574
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Ellie Goulding worked with what other writers on her third studio album, Delirium?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 2232,
+              "outputTokens": 64,
+              "totalTokens": 2296,
+              "latencyMs": 3799.2065000000002
+            },
+            "states": [
+              {
+                "answer": "Max Martin, Savan Kotecha, and Ilya Salmanzadeh",
+                "confidence": 0.83,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "Max Martin, Savan Kotecha, and Ilya Salmanzadeh",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:14:29.175Z",
+                "data": {
+                  "chars": 82,
+                  "scope": "mission:5ab96ab755429970cfb8eacd"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:14:29.175Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:14:29.176Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:29.176Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:31.752Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 678,
+                  "outputTokens": 44,
+                  "totalTokens": 722,
+                  "latencyMs": 2576.1166999999987
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:14:31.752Z",
+                "data": {
+                  "confidence": 0.83,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:31.752Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:32.976Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 2232,
+                  "outputTokens": 64,
+                  "totalTokens": 2296,
+                  "latencyMs": 3799.2065000000002
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:14:32.976Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:14:32.976Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ab96ab755429970cfb8eacd",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Max Martin, Savan Kotecha, and Ilya Salmanzadeh",
+            "confidence": 0.83,
+            "sources": [
+              "On My Mind (Ellie Goulding song)"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Max Martin, Savan Kotecha, and Ilya Salmanzadeh\",\"confidence\":0.83,\"sources\":[\"On My Mind (Ellie Goulding song)\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "Max Martin, Greg Kurstin, Ryan Tedder, and Klas Åhlund",
+          "endToEndLatencyMs": 1860.2423000000053,
+          "usage": {
+            "inputTokens": 64,
+            "outputTokens": 21,
+            "reasoningTokens": 0,
+            "totalTokens": 85,
+            "modelLatencyMs": 1860.2263999999996
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Max Martin, Greg Kurstin, Ryan Tedder, and Klas Åhlund",
+              "latencyMs": 1860.2263999999996,
+              "usage": {
+                "input_tokens": 64,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 21,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 85
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.375,
+            "exactLoss": 1,
+            "taskLoss": 0.625
+          }
+        },
+        "ragGpt56": {
+          "answer": "Max Martin, Savan Kotecha, Ilya Salmanzadeh",
+          "endToEndLatencyMs": 1367.7127000000037,
+          "usage": {
+            "inputTokens": 641,
+            "outputTokens": 19,
+            "reasoningTokens": 0,
+            "totalTokens": 660,
+            "modelLatencyMs": 1367.0055999999968
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Max Martin, Savan Kotecha, Ilya Salmanzadeh",
+              "latencyMs": 1367.0055999999968,
+              "usage": {
+                "input_tokens": 641,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 19,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 660
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.6639999999970314,
+            "selectedTitles": [
+              "Halcyon (album)",
+              "List of songs recorded by Ellie Goulding",
+              "On My Mind (Ellie Goulding song)"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.923076923076923,
+            "exactLoss": 1,
+            "taskLoss": 0.07692307692307698
+          }
+        }
+      }
+    },
+    {
+      "id": "5adbf0a255429947ff17385a",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "expected": "no",
+      "executionOrder": [
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56",
+        "agentHive"
+      ],
+      "systems": {
+        "adaptiveMemoryHive": {
+          "answer": "no",
+          "endToEndLatencyMs": 1794.5037000000011,
+          "usage": {
+            "inputTokens": 427,
+            "outputTokens": 28,
+            "reasoningTokens": 0,
+            "totalTokens": 455,
+            "modelLatencyMs": 1792.008799999996
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"No\",\"confidence\":1.0,\"sources\":[\"Laleli Mosque\",\"Esma Sultan Mansion\"]}",
+              "latencyMs": 1792.008799999996,
+              "usage": {
+                "input_tokens": 427,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 28,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 455
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 427,
+              "outputTokens": 28,
+              "totalTokens": 455,
+              "latencyMs": 1792.008799999996
+            },
+            "states": [
+              {
+                "answer": "No",
+                "confidence": 1,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:14:36.208Z",
+                "data": {
+                  "chars": 79,
+                  "scope": "mission:5adbf0a255429947ff17385a"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:14:36.208Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:14:36.209Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:14:36.209Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:14:38.001Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 427,
+                  "outputTokens": 28,
+                  "totalTokens": 455,
+                  "latencyMs": 1792.008799999996
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:14:38.002Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 1,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:14:38.002Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              },
+              {
+                "name": "on_output_sanitized",
+                "at": "2026-08-05T17:14:38.002Z",
+                "data": {
+                  "rule": "binary_answer_span"
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5adbf0a255429947ff17385a",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 8,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "No",
+            "confidence": 1,
+            "sources": [
+              "Laleli Mosque",
+              "Esma Sultan Mansion"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"No\",\"confidence\":1.0,\"sources\":[\"Laleli Mosque\",\"Esma Sultan Mansion\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "No",
+          "endToEndLatencyMs": 1219.4717000000019,
+          "usage": {
+            "inputTokens": 61,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 66,
+            "modelLatencyMs": 1219.4559999999983
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "No",
+              "latencyMs": 1219.4559999999983,
+              "usage": {
+                "input_tokens": 61,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 66
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "ragGpt56": {
+          "answer": "No.",
+          "endToEndLatencyMs": 1494.644699999997,
+          "usage": {
+            "inputTokens": 389,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 395,
+            "modelLatencyMs": 1494.2266000000018
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "No.",
+              "latencyMs": 1494.2266000000018,
+              "usage": {
+                "input_tokens": 389,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 395
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.38739999999961583,
+            "selectedTitles": [
+              "Esma Sultan Mansion",
+              "Laleli Mosque",
+              "Sultan Ahmed Mosque"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "No, they are in different neighborhoods.",
+          "endToEndLatencyMs": 8451.7301,
+          "usage": {
+            "inputTokens": 2224,
+            "outputTokens": 145,
+            "reasoningTokens": 0,
+            "totalTokens": 2369,
+            "modelLatencyMs": 8451.315300000002
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Laleli Mosque location, Esma Sultan Mansion location, neighborhood comparison]\nevidence: Use “Laleli Mosque” to identify its neighborhood; use “Esma Sultan Mansion” to identify its neighborhood; compare the two",
+              "latencyMs": 2381.837800000001,
+              "usage": {
+                "input_tokens": 289,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 345
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: answered; artifacts: Laleli; Ortaköy; evidence: “Laleli Mosque” — Laleli neighborhood; “Esma Sultan Mansion” — Ortaköy neighborhood; blockers: none; spent: 2 documents; reusable_context: No, they are in different neighborhoods.",
+              "latencyMs": 2318.6886000000013,
+              "usage": {
+                "input_tokens": 1346,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1343,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 65,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1411
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "No, they are in different neighborhoods.",
+              "latencyMs": 2354.965600000003,
+              "usage": {
+                "input_tokens": 288,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 12,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 300
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "No, they are in different neighborhoods.",
+              "latencyMs": 1395.8232999999964,
+              "usage": {
+                "input_tokens": 301,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 12,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 313
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Laleli Mosque location, Esma Sultan Mansion location, neighborhood comparison]\nevidence: Use “Laleli Mosque” to identify its neighborhood; use “Esma Sultan Mansion” to identify its neighborhood; compare the two",
+            "forage": "status: answered; artifacts: Laleli; Ortaköy; evidence: “Laleli Mosque” — Laleli neighborhood; “Esma Sultan Mansion” — Ortaköy neighborhood; blockers: none; spent: 2 documents; reusable_context: No, they are in different neighborhoods.",
+            "build": "No, they are in different neighborhoods.",
+            "verify": "No, they are in different neighborhoods."
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.2857142857142857,
+            "exactLoss": 1,
+            "taskLoss": 0.7142857142857143
+          }
+        }
+      }
+    },
+    {
+      "id": "5a8133725542995ce29dcbdb",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Which writer was from England, Henry Roth or Robert Erskine Childers?",
+      "expected": "Robert Erskine Childers DSC",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "Robert Erskine Childers",
+          "endToEndLatencyMs": 2121.7848000000013,
+          "usage": {
+            "inputTokens": 61,
+            "outputTokens": 10,
+            "reasoningTokens": 0,
+            "totalTokens": 71,
+            "modelLatencyMs": 2121.7644999999975
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Robert Erskine Childers",
+              "latencyMs": 2121.7644999999975,
+              "usage": {
+                "input_tokens": 61,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 71
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8571428571428571,
+            "exactLoss": 1,
+            "taskLoss": 0.1428571428571429
+          }
+        },
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1064.787900000003,
+          "usage": {
+            "inputTokens": 372,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 377,
+            "modelLatencyMs": 1064.311099999999
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1064.311099999999,
+              "usage": {
+                "input_tokens": 372,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 377
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.4279000000024098,
+            "selectedTitles": [
+              "Henry Roth",
+              "Erskine Barton Childers",
+              "Gretchen Osgood Warren"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Robert Erskine Childers",
+          "endToEndLatencyMs": 11103.153800000007,
+          "usage": {
+            "inputTokens": 2042,
+            "outputTokens": 87,
+            "reasoningTokens": 0,
+            "totalTokens": 2129,
+            "modelLatencyMs": 11102.832700000006
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Henry Roth; Robert Erskine Childers\nevidence: Compare each writer’s birthplace/national origin in their titled corpus entries; Robert Erskine Childers is linked to England.\nblockers: none\nspent:",
+              "latencyMs": 2445.662500000006,
+              "usage": {
+                "input_tokens": 269,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 325
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Robert Erskine Childers.",
+              "latencyMs": 1809.1657999999952,
+              "usage": {
+                "input_tokens": 1294,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1291,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 11,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1305
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Robert Erskine Childers",
+              "latencyMs": 1371.0187000000005,
+              "usage": {
+                "input_tokens": 234,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 244
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Robert Erskine Childers",
+              "latencyMs": 5476.985700000005,
+              "usage": {
+                "input_tokens": 245,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 255
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Henry Roth; Robert Erskine Childers\nevidence: Compare each writer’s birthplace/national origin in their titled corpus entries; Robert Erskine Childers is linked to England.\nblockers: none\nspent:",
+            "forage": "Robert Erskine Childers.",
+            "build": "Robert Erskine Childers",
+            "verify": "Robert Erskine Childers"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8571428571428571,
+            "exactLoss": 1,
+            "taskLoss": 0.1428571428571429
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Robert Erskine Childers",
+          "endToEndLatencyMs": 2943.2592000000004,
+          "usage": {
+            "inputTokens": 1541,
+            "outputTokens": 51,
+            "reasoningTokens": 0,
+            "totalTokens": 1592,
+            "modelLatencyMs": 2941.5065999999933
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Robert Erskine Childers\",\"confidence\":0.35,\"sources\":[\"Henry Roth\",\"Erskine Barton Childers\",\"Gretchen Osgood Warren\"]}",
+              "latencyMs": 1586.3629999999976,
+              "usage": {
+                "input_tokens": 410,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 41,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 451
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Robert Erskine Childers",
+              "latencyMs": 1355.1435999999958,
+              "usage": {
+                "input_tokens": 1131,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1128,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1141
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Which writer was from England, Henry Roth or Robert Erskine Childers?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1541,
+              "outputTokens": 51,
+              "totalTokens": 1592,
+              "latencyMs": 2941.5065999999933
+            },
+            "states": [
+              {
+                "answer": "Robert Erskine Childers",
+                "confidence": 0.35,
+                "evidenceCount": 3,
+                "conflict": false
+              },
+              {
+                "answer": "Robert Erskine Childers",
+                "confidence": 0.9,
+                "evidenceCount": 10,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:15:03.460Z",
+                "data": {
+                  "chars": 69,
+                  "scope": "mission:5a8133725542995ce29dcbdb"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:15:03.460Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:15:03.461Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:15:03.461Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:15:05.047Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 410,
+                  "outputTokens": 41,
+                  "totalTokens": 451,
+                  "latencyMs": 1586.3629999999976
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:15:05.047Z",
+                "data": {
+                  "confidence": 0.35,
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:15:05.048Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 10
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:15:06.403Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1541,
+                  "outputTokens": 51,
+                  "totalTokens": 1592,
+                  "latencyMs": 2941.5065999999933
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:15:06.403Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:15:06.403Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 10,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a8133725542995ce29dcbdb",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 38,
+            "memoryRecordsBeforeCleanup": 12,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 12
+          },
+          "draft": {
+            "answer": "Robert Erskine Childers",
+            "confidence": 0.35,
+            "sources": [
+              "Henry Roth",
+              "Erskine Barton Childers",
+              "Gretchen Osgood Warren"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Robert Erskine Childers\",\"confidence\":0.35,\"sources\":[\"Henry Roth\",\"Erskine Barton Childers\",\"Gretchen Osgood Warren\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.8571428571428571,
+            "exactLoss": 1,
+            "taskLoss": 0.1428571428571429
+          }
+        }
+      }
+    },
+    {
+      "id": "5a8e068b5542995085b37384",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Are Ferocactus and Silene both types of plant?",
+      "expected": "yes",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Yes.",
+          "endToEndLatencyMs": 1520.0629999999946,
+          "usage": {
+            "inputTokens": 569,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 575,
+            "modelLatencyMs": 1519.4786000000022
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Yes.",
+              "latencyMs": 1519.4786000000022,
+              "usage": {
+                "input_tokens": 569,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 575
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.548399999999674,
+            "selectedTitles": [
+              "Silene menziesii",
+              "Ferocactus",
+              "Sex determination in Silene"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "Yes.",
+          "endToEndLatencyMs": 15782.359899999996,
+          "usage": {
+            "inputTokens": 2445,
+            "outputTokens": 100,
+            "reasoningTokens": 0,
+            "totalTokens": 2545,
+            "modelLatencyMs": 15782.05320000001
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Ferocactus, Silene]\nevidence: Verify each genus’s document states it is a genus/type of flowering plant.\nblockers: Corpus text not supplied; only titles available.\nspent: 27 words\nreusable",
+              "latencyMs": 3501.031700000007,
+              "usage": {
+                "input_tokens": 264,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 320
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: yes\nevidence: “Ferocactus” — genus of cacti; “Silene” — genus of flowering plants.",
+              "latencyMs": 6581.142800000001,
+              "usage": {
+                "input_tokens": 1680,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1677,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 32,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1712
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Yes.",
+              "latencyMs": 3902.558400000009,
+              "usage": {
+                "input_tokens": 247,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 253
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Yes.",
+              "latencyMs": 1797.3202999999921,
+              "usage": {
+                "input_tokens": 254,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 260
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Ferocactus, Silene]\nevidence: Verify each genus’s document states it is a genus/type of flowering plant.\nblockers: Corpus text not supplied; only titles available.\nspent: 27 words\nreusable",
+            "forage": "status: yes\nevidence: “Ferocactus” — genus of cacti; “Silene” — genus of flowering plants.",
+            "build": "Yes.",
+            "verify": "Yes."
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "yes",
+          "endToEndLatencyMs": 2453.1582000000053,
+          "usage": {
+            "inputTokens": 607,
+            "outputTokens": 34,
+            "reasoningTokens": 0,
+            "totalTokens": 641,
+            "modelLatencyMs": 2451.7505999999994
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Yes, both are types of plant.\",\"confidence\":0.99,\"sources\":[\"Ferocactus\",\"Sex determination in Silene\"]}",
+              "latencyMs": 2451.7505999999994,
+              "usage": {
+                "input_tokens": 607,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 34,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 641
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Are Ferocactus and Silene both types of plant?",
+            "success": {
+              "confidenceMin": 0.9,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 607,
+              "outputTokens": 34,
+              "totalTokens": 641,
+              "latencyMs": 2451.7505999999994
+            },
+            "states": [
+              {
+                "answer": "Yes, both are types of plant.",
+                "confidence": 0.99,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:15:23.709Z",
+                "data": {
+                  "chars": 46,
+                  "scope": "mission:5a8e068b5542995085b37384"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:15:23.709Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:15:23.710Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:15:23.710Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:15:26.162Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 607,
+                  "outputTokens": 34,
+                  "totalTokens": 641,
+                  "latencyMs": 2451.7505999999994
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:15:26.162Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 0.99,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:15:26.162Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              },
+              {
+                "name": "on_output_sanitized",
+                "at": "2026-08-05T17:15:26.162Z",
+                "data": {
+                  "rule": "binary_answer_span"
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a8e068b5542995085b37384",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 8,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "Yes, both are types of plant.",
+            "confidence": 0.99,
+            "sources": [
+              "Ferocactus",
+              "Sex determination in Silene"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Yes, both are types of plant.\",\"confidence\":0.99,\"sources\":[\"Ferocactus\",\"Sex determination in Silene\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "Yes.",
+          "endToEndLatencyMs": 2678.5964000000095,
+          "usage": {
+            "inputTokens": 57,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 63,
+            "modelLatencyMs": 2678.5806999999913
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Yes.",
+              "latencyMs": 2678.5806999999913,
+              "usage": {
+                "input_tokens": 57,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 63
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    }
+  ]
+}

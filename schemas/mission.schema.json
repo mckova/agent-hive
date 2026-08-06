@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-hive.dev/schemas/mission.schema.json",
+  "title": "Agent Hive Mission Genome",
+  "type": "object",
+  "required": ["schemaVersion", "mission", "budget", "policy", "cells"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "mission": {
+      "type": "object",
+      "required": ["goal"],
+      "properties": {
+        "goal": { "type": "string", "minLength": 1 },
+        "sourceLanguage": { "type": "string", "default": "auto" },
+        "responseLanguage": { "type": "string", "default": "same-as-user" },
+        "must": { "$ref": "#/$defs/stringList" },
+        "avoid": { "$ref": "#/$defs/stringList" },
+        "doneWhen": { "$ref": "#/$defs/stringList" }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": ["total", "reservePercent"],
+      "properties": {
+        "unit": { "enum": ["tokens", "usd-micros"], "default": "tokens" },
+        "total": { "type": "integer", "minimum": 1 },
+        "reservePercent": { "type": "number", "minimum": 0, "exclusiveMaximum": 100 }
+      },
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "required": ["maxWorkers"],
+      "properties": {
+        "maxWorkers": { "type": "integer", "minimum": 1, "maximum": 32 },
+        "qualityFloor": { "enum": ["economy", "balanced", "frontier"] }
+      },
+      "additionalProperties": false
+    },
+    "guardrails": {
+      "type": "object",
+      "properties": {
+        "allowedPathPrefixes": { "$ref": "#/$defs/stringList" },
+        "deniedPathPrefixes": { "$ref": "#/$defs/stringList" },
+        "allowNetwork": { "type": "boolean", "default": false },
+        "humanApprovalActions": { "$ref": "#/$defs/stringList" },
+        "maxAttemptsPerCell": { "type": "integer", "minimum": 1, "maximum": 20, "default": 2 },
+        "trustedInstructionSources": { "$ref": "#/$defs/stringList" }
+      },
+      "additionalProperties": false
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "economy": { "$ref": "#/$defs/modelMap" },
+        "balanced": { "$ref": "#/$defs/modelMap" },
+        "frontier": { "$ref": "#/$defs/modelMap" }
+      },
+      "additionalProperties": false
+    },
+    "cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cell" },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stringList": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "modelMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "cell": {
+      "type": "object",
+      "required": ["id", "title", "role", "priority", "complexity", "risk"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "role": { "enum": ["scout", "architect", "forager", "builder", "guard", "keeper"] },
+        "priority": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "complexity": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "risk": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "required": { "type": "boolean", "default": true },
+        "instructions": { "$ref": "#/$defs/stringList" },
+        "actions": {
+          "type": "array",
+          "items": { "enum": ["read", "write", "network", "delete", "push", "deploy", "external-write"] },
+          "uniqueItems": true
+        },
+        "paths": { "$ref": "#/$defs/stringList" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

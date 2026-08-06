@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-hive.dev/schemas/run.schema.json",
+  "title": "Agent Hive Resumable Run",
+  "type": "object",
+  "required": ["schemaVersion", "runId", "target", "driver", "workspace", "status", "startedAt", "updatedAt", "repairs", "history"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "target": { "enum": ["generic", "codex", "claude", "mock"] },
+    "driver": { "type": "string", "minLength": 1 },
+    "workspace": { "type": ["string", "null"] },
+    "status": { "enum": ["pending", "running", "dry_run", "completed", "budget_exhausted", "blocked"] },
+    "reason": { "type": ["string", "null"] },
+    "currentCell": { "type": ["string", "null"] },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": ["string", "null"], "format": "date-time" },
+    "repairs": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/stringList" }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cell", "attempt", "status", "startedAt", "finishedAt", "metrics", "artifactCount", "evidenceCount", "blockerCount"],
+        "properties": {
+          "cell": { "type": "string" },
+          "attempt": { "type": "integer", "minimum": 1 },
+          "status": { "enum": ["done", "partial", "blocked", "failed"] },
+          "startedAt": { "type": "string", "format": "date-time" },
+          "finishedAt": { "type": "string", "format": "date-time" },
+          "metrics": { "$ref": "#/$defs/metrics" },
+          "artifactCount": { "type": "integer", "minimum": 0 },
+          "evidenceCount": { "type": "integer", "minimum": 0 },
+          "blockerCount": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "schedule": {
+      "type": "array",
+      "items": { "type": "array", "items": { "type": "string" } }
+    },
+    "gates": { "type": "array", "items": { "$ref": "#/$defs/gate" } },
+    "gate": { "$ref": "#/$defs/gate" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stringList": { "type": "array", "items": { "type": "string" } },
+    "metrics": {
+      "type": "object",
+      "required": ["modelCalls", "inputTokens", "cachedInputTokens", "outputTokens", "reasoningTokens", "latencyMs", "costUsd"],
+      "properties": {
+        "modelCalls": { "type": "integer", "minimum": 0 },
+        "inputTokens": { "type": "integer", "minimum": 0 },
+        "cachedInputTokens": { "type": "integer", "minimum": 0 },
+        "outputTokens": { "type": "integer", "minimum": 0 },
+        "reasoningTokens": { "type": "integer", "minimum": 0 },
+        "latencyMs": { "type": "integer", "minimum": 0 },
+        "costUsd": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "gate": {
+      "type": "object",
+      "required": ["result", "reason", "action", "paths", "allowed"],
+      "properties": {
+        "result": { "enum": ["allow", "deny", "human_required"] },
+        "reason": { "type": "string" },
+        "action": { "type": "string" },
+        "paths": { "$ref": "#/$defs/stringList" },
+        "allowed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

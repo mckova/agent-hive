@@ -1,0 +1,2617 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T17:06:22.640Z",
+  "oracle": {
+    "question": "Does Agent Hive improve answer quality enough to justify its latency and token cost?",
+    "dataset": "hotpotqa/hotpot_qa",
+    "config": "distractor",
+    "split": "validation",
+    "examples": 6,
+    "seed": 7419,
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "none",
+    "outputTokenBudgetPerSystem": 416,
+    "rag": "local BM25 top-3 + one gpt-5.6-sol call",
+    "hive": "scout -> forager -> builder -> guard; every cell uses gpt-5.6-sol",
+    "adaptiveMemoryHive": "scoped evidence memory + goal controller + hooks + early stop + at most one guard repair; every model call uses gpt-5.6-sol",
+    "loss": "taskLoss = 1 - HotpotQA token F1; exactLoss = 1 - exact match"
+  },
+  "methods": {
+    "directGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0.3333333333333333,
+      "tokenF1": 0.38888888888888884,
+      "exactLoss": 0.6666666666666666,
+      "taskLoss": 0.6111111111111112,
+      "averageEndToEndLatencyMs": 2003.0757833333344,
+      "p50EndToEndLatencyMs": 1627.1909000000014,
+      "usage": {
+        "inputTokens": 390,
+        "outputTokens": 42,
+        "reasoningTokens": 0,
+        "totalTokens": 432
+      },
+      "averageTokensPerExample": 72
+    },
+    "ragGpt56": {
+      "examples": 6,
+      "calls": 6,
+      "exactMatch": 0.3333333333333333,
+      "tokenF1": 0.3333333333333333,
+      "exactLoss": 0.6666666666666666,
+      "taskLoss": 0.6666666666666666,
+      "averageEndToEndLatencyMs": 1399.4932833333335,
+      "p50EndToEndLatencyMs": 1280.9393,
+      "usage": {
+        "inputTokens": 2543,
+        "outputTokens": 38,
+        "reasoningTokens": 0,
+        "totalTokens": 2581
+      },
+      "averageTokensPerExample": 430.1666666666667
+    },
+    "agentHive": {
+      "examples": 6,
+      "calls": 24,
+      "exactMatch": 0.6666666666666666,
+      "tokenF1": 0.7777777777777777,
+      "exactLoss": 0.3333333333333333,
+      "taskLoss": 0.22222222222222224,
+      "averageEndToEndLatencyMs": 12185.47956666667,
+      "p50EndToEndLatencyMs": 9523.741699999999,
+      "usage": {
+        "inputTokens": 14300,
+        "outputTokens": 661,
+        "reasoningTokens": 0,
+        "totalTokens": 14961
+      },
+      "averageTokensPerExample": 2493.5
+    },
+    "adaptiveMemoryHive": {
+      "examples": 6,
+      "calls": 9,
+      "exactMatch": 0.5,
+      "tokenF1": 0.5416666666666666,
+      "exactLoss": 0.5,
+      "taskLoss": 0.4583333333333333,
+      "averageEndToEndLatencyMs": 3518.509483333335,
+      "p50EndToEndLatencyMs": 2620.180400000001,
+      "usage": {
+        "inputTokens": 5338,
+        "outputTokens": 205,
+        "reasoningTokens": 0,
+        "totalTokens": 5543
+      },
+      "averageTokensPerExample": 923.8333333333334
+    }
+  },
+  "examples": [
+    {
+      "id": "5a8c7595554299585d9e36b6",
+      "type": "bridge",
+      "level": "hard",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "expected": "Chief of Protocol",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "U.S. Ambassador to Ghana",
+          "endToEndLatencyMs": 4120.6787,
+          "usage": {
+            "inputTokens": 66,
+            "outputTokens": 10,
+            "reasoningTokens": 0,
+            "totalTokens": 76,
+            "modelLatencyMs": 4120.5737
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "U.S. Ambassador to Ghana",
+              "latencyMs": 4120.5737,
+              "usage": {
+                "input_tokens": 66,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 76
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1280.9393,
+          "usage": {
+            "inputTokens": 387,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 392,
+            "modelLatencyMs": 1276.6498999999994
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1276.6498999999994,
+              "usage": {
+                "input_tokens": 387,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 392
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 4.212999999999738,
+            "selectedTitles": [
+              "A Kiss for Corliss",
+              "Kiss and Tell (1945 film)",
+              "Secretary of State for Constitutional Affairs"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Chief of Protocol of the United States",
+          "endToEndLatencyMs": 7543.668200000001,
+          "usage": {
+            "inputTokens": 2426,
+            "outputTokens": 103,
+            "reasoningTokens": 0,
+            "totalTokens": 2529,
+            "modelLatencyMs": 7539.7181
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: [Kiss and Tell (1945 film) → Corliss Archer portrayed by Shirley Temple; Shirley Temple → served as U.S. Ambassador to Ghana and Czechoslovakia]\nevidence: \"Kiss and Tell",
+              "latencyMs": 1722.8132000000005,
+              "usage": {
+                "input_tokens": 282,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 338
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "U.S. Ambassador to Ghana and Czechoslovakia; Chief of Protocol of the United States.",
+              "latencyMs": 3274.793599999999,
+              "usage": {
+                "input_tokens": 1616,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1613,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 25,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1641
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Chief of Protocol of the United States",
+              "latencyMs": 1601.2304000000004,
+              "usage": {
+                "input_tokens": 258,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 11,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 269
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Chief of Protocol of the United States",
+              "latencyMs": 940.8809000000001,
+              "usage": {
+                "input_tokens": 270,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 11,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 281
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: [Kiss and Tell (1945 film) → Corliss Archer portrayed by Shirley Temple; Shirley Temple → served as U.S. Ambassador to Ghana and Czechoslovakia]\nevidence: \"Kiss and Tell",
+            "forage": "U.S. Ambassador to Ghana and Czechoslovakia; Chief of Protocol of the United States.",
+            "build": "Chief of Protocol of the United States",
+            "verify": "Chief of Protocol of the United States"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.6666666666666666,
+            "exactLoss": 1,
+            "taskLoss": 0.33333333333333337
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "United States ambassador to Ghana",
+          "endToEndLatencyMs": 5718.7034,
+          "usage": {
+            "inputTokens": 1209,
+            "outputTokens": 40,
+            "reasoningTokens": 0,
+            "totalTokens": 1249,
+            "modelLatencyMs": 5709.039599999998
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"No supported position identified\",\"confidence\":0.0,\"sources\":[\"Kiss and Tell (1945 film)\"]}",
+              "latencyMs": 3099.574699999999,
+              "usage": {
+                "input_tokens": 425,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 456
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "United States ambassador to Ghana",
+              "latencyMs": 2609.464899999999,
+              "usage": {
+                "input_tokens": 784,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 793
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1209,
+              "outputTokens": 40,
+              "totalTokens": 1249,
+              "latencyMs": 5709.039599999998
+            },
+            "states": [
+              {
+                "answer": "No supported position identified",
+                "confidence": 0,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "United States ambassador to Ghana",
+                "confidence": 0.9,
+                "evidenceCount": 6,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:06:35.588Z",
+                "data": {
+                  "chars": 102,
+                  "scope": "mission:5a8c7595554299585d9e36b6"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:06:35.589Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:06:35.592Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:06:35.594Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:06:38.694Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 425,
+                  "outputTokens": 31,
+                  "totalTokens": 456,
+                  "latencyMs": 3099.574699999999
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:06:38.695Z",
+                "data": {
+                  "confidence": 0,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:06:38.696Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 6
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:06:41.305Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1209,
+                  "outputTokens": 40,
+                  "totalTokens": 1249,
+                  "latencyMs": 5709.039599999998
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:06:41.305Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:06:41.306Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 6,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a8c7595554299585d9e36b6",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 26,
+            "memoryRecordsBeforeCleanup": 8,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 8
+          },
+          "draft": {
+            "answer": "No supported position identified",
+            "confidence": 0,
+            "sources": [
+              "Kiss and Tell (1945 film)"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"No supported position identified\",\"confidence\":0.0,\"sources\":[\"Kiss and Tell (1945 film)\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "5a85fb085542994775f606de",
+      "type": "bridge",
+      "level": "hard",
+      "question": "What is the name of the executive producer of the film that has a score composed by Jerry Goldsmith?",
+      "expected": "Ronald Shusett",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Ronald Shusett",
+          "endToEndLatencyMs": 1566.8827999999994,
+          "usage": {
+            "inputTokens": 450,
+            "outputTokens": 9,
+            "reasoningTokens": 0,
+            "totalTokens": 459,
+            "modelLatencyMs": 1566.141499999998
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Ronald Shusett",
+              "latencyMs": 1566.141499999998,
+              "usage": {
+                "input_tokens": 450,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 459
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.7026999999980035,
+            "selectedTitles": [
+              "Legend (film score)",
+              "Alien (film)",
+              "Alien (soundtrack)"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "agentHive": {
+          "answer": "Ronald Shusett",
+          "endToEndLatencyMs": 11296.401400000002,
+          "usage": {
+            "inputTokens": 2612,
+            "outputTokens": 156,
+            "reasoningTokens": 0,
+            "totalTokens": 2768,
+            "modelLatencyMs": 11295.159700000007
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ambiguous\nartifacts: identify target film from corpus; extract its executive producer credit\nevidence: soundtrack/film document must state “score composed by Jerry Goldsmith”; corresponding film document must name executive producer\nblockers: multiple listed films have Goldsmith",
+              "latencyMs": 3098.366900000001,
+              "usage": {
+                "input_tokens": 289,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 345
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: ambiguous\nartifacts: “Alien (soundtrack)” → “Alien (film)”\nevidence: “Alien (soundtrack)” states the score was composed by Jerry Goldsmith; “Alien (film)” states “Shusett was executive producer.”\nblockers: Other Goldsmith-scored films are listed.\nspent: 76\nreusable_context: Ronald Shusett",
+              "latencyMs": 2262.924700000003,
+              "usage": {
+                "input_tokens": 1682,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1679,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 82,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1764
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Ronald Shusett",
+              "latencyMs": 4730.020400000001,
+              "usage": {
+                "input_tokens": 315,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 324
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Ronald Shusett",
+              "latencyMs": 1203.847700000002,
+              "usage": {
+                "input_tokens": 326,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 335
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ambiguous\nartifacts: identify target film from corpus; extract its executive producer credit\nevidence: soundtrack/film document must state “score composed by Jerry Goldsmith”; corresponding film document must name executive producer\nblockers: multiple listed films have Goldsmith",
+            "forage": "status: ambiguous\nartifacts: “Alien (soundtrack)” → “Alien (film)”\nevidence: “Alien (soundtrack)” states the score was composed by Jerry Goldsmith; “Alien (film)” states “Shusett was executive producer.”\nblockers: Other Goldsmith-scored films are listed.\nspent: 76\nreusable_context: Ronald Shusett",
+            "build": "Ronald Shusett",
+            "verify": "Ronald Shusett"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Ronald Shusett",
+          "endToEndLatencyMs": 2620.180400000001,
+          "usage": {
+            "inputTokens": 488,
+            "outputTokens": 33,
+            "reasoningTokens": 0,
+            "totalTokens": 521,
+            "modelLatencyMs": 2617.667300000001
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Ronald Shusett\",\"confidence\":1.0,\"sources\":[\"Alien (soundtrack)\",\"Alien (film)\"]}",
+              "latencyMs": 2617.667300000001,
+              "usage": {
+                "input_tokens": 488,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 33,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 521
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: What is the name of the executive producer of the film that has a score composed by Jerry Goldsmith?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 488,
+              "outputTokens": 33,
+              "totalTokens": 521,
+              "latencyMs": 2617.667300000001
+            },
+            "states": [
+              {
+                "answer": "Ronald Shusett",
+                "confidence": 1,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:06:54.176Z",
+                "data": {
+                  "chars": 100,
+                  "scope": "mission:5a85fb085542994775f606de"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:06:54.176Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:06:54.176Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:06:54.177Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:06:56.795Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 488,
+                  "outputTokens": 33,
+                  "totalTokens": 521,
+                  "latencyMs": 2617.667300000001
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:06:56.795Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 1,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:06:56.796Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a85fb085542994775f606de",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 7,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "Ronald Shusett",
+            "confidence": 1,
+            "sources": [
+              "Alien (soundtrack)",
+              "Alien (film)"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Ronald Shusett\",\"confidence\":1.0,\"sources\":[\"Alien (soundtrack)\",\"Alien (film)\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "Robert Evans",
+          "endToEndLatencyMs": 1627.1909000000014,
+          "usage": {
+            "inputTokens": 66,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 72,
+            "modelLatencyMs": 1627.1721000000034
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Robert Evans",
+              "latencyMs": 1627.1721000000034,
+              "usage": {
+                "input_tokens": 66,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 72
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "5a8f4c8d554299458435d5a3",
+      "type": "bridge",
+      "level": "hard",
+      "question": "Scott Parkin has been a vocal critic of Exxonmobil and another corporation that has operations in how many countries ?",
+      "expected": "more than 70 countries",
+      "executionOrder": [
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56"
+      ],
+      "systems": {
+        "agentHive": {
+          "answer": "More than 70 countries.",
+          "endToEndLatencyMs": 11929.933700000001,
+          "usage": {
+            "inputTokens": 2176,
+            "outputTokens": 86,
+            "reasoningTokens": 0,
+            "totalTokens": 2262,
+            "modelLatencyMs": 11929.015800000001
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Scott Parkin → Halliburton → country-count\nevidence: Use “Scott Parkin” to identify Halliburton as the other criticized corporation; use “Halliburton” to find how many countries it operates in.",
+              "latencyMs": 5762.462599999999,
+              "usage": {
+                "input_tokens": 270,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 326
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "More than 70 countries.",
+              "latencyMs": 2223.724900000001,
+              "usage": {
+                "input_tokens": 1405,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1402,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1415
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "More than 70 countries.",
+              "latencyMs": 2364.2315000000017,
+              "usage": {
+                "input_tokens": 245,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 255
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "More than 70 countries.",
+              "latencyMs": 1578.5967999999993,
+              "usage": {
+                "input_tokens": 256,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 10,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 266
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Scott Parkin → Halliburton → country-count\nevidence: Use “Scott Parkin” to identify Halliburton as the other criticized corporation; use “Halliburton” to find how many countries it operates in.",
+            "forage": "More than 70 countries.",
+            "build": "More than 70 countries.",
+            "verify": "More than 70 countries."
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "More than 70 countries",
+          "endToEndLatencyMs": 1891.3755999999994,
+          "usage": {
+            "inputTokens": 503,
+            "outputTokens": 30,
+            "reasoningTokens": 0,
+            "totalTokens": 533,
+            "modelLatencyMs": 1888.9773999999961
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"More than 70 countries\",\"confidence\":0.99,\"sources\":[\"Scott Parkin\",\"Halliburton\"]}",
+              "latencyMs": 1888.9773999999961,
+              "usage": {
+                "input_tokens": 503,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 30,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 533
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Scott Parkin has been a vocal critic of Exxonmobil and another corporation that has operations in how many countries ?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 503,
+              "outputTokens": 30,
+              "totalTokens": 533,
+              "latencyMs": 1888.9773999999961
+            },
+            "states": [
+              {
+                "answer": "More than 70 countries",
+                "confidence": 0.99,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:07:10.357Z",
+                "data": {
+                  "chars": 118,
+                  "scope": "mission:5a8f4c8d554299458435d5a3"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:07:10.357Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:07:10.358Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:07:10.358Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:07:12.248Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 503,
+                  "outputTokens": 30,
+                  "totalTokens": 533,
+                  "latencyMs": 1888.9773999999961
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:07:12.248Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 0.99,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:07:12.248Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5a8f4c8d554299458435d5a3",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 7,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "More than 70 countries",
+            "confidence": 0.99,
+            "sources": [
+              "Scott Parkin",
+              "Halliburton"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"More than 70 countries\",\"confidence\":0.99,\"sources\":[\"Scott Parkin\",\"Halliburton\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "directGpt56": {
+          "answer": "130 countries",
+          "endToEndLatencyMs": 1374.758099999999,
+          "usage": {
+            "inputTokens": 67,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 73,
+            "modelLatencyMs": 1374.7451
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "130 countries",
+              "latencyMs": 1374.7451,
+              "usage": {
+                "input_tokens": 67,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 73
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.3333333333333333,
+            "exactLoss": 1,
+            "taskLoss": 0.6666666666666667
+          }
+        },
+        "ragGpt56": {
+          "answer": "More than 70 countries",
+          "endToEndLatencyMs": 1404.5573999999979,
+          "usage": {
+            "inputTokens": 465,
+            "outputTokens": 9,
+            "reasoningTokens": 0,
+            "totalTokens": 474,
+            "modelLatencyMs": 1403.857600000003
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "More than 70 countries",
+              "latencyMs": 1403.857600000003,
+              "usage": {
+                "input_tokens": 465,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 474
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.6707999999998719,
+            "selectedTitles": [
+              "Scott Parkin",
+              "Yvonne Ridley",
+              "Halliburton"
+            ]
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ab51dae5542991779162d82",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Are both Elko Regional Airport and Gerald R. Ford International Airport located in Michigan?",
+      "expected": "no",
+      "executionOrder": [
+        "adaptiveMemoryHive",
+        "directGpt56",
+        "ragGpt56",
+        "agentHive"
+      ],
+      "systems": {
+        "adaptiveMemoryHive": {
+          "answer": "No, Elko Regional Airport is in Nevada.",
+          "endToEndLatencyMs": 3415.7972999999984,
+          "usage": {
+            "inputTokens": 1402,
+            "outputTokens": 40,
+            "reasoningTokens": 0,
+            "totalTokens": 1442,
+            "modelLatencyMs": 3407.9662000000026
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"No\",\"confidence\":0.5,\"sources\":[\"Gerald R. Ford International Airport\"]}",
+              "latencyMs": 1446.5962999999974,
+              "usage": {
+                "input_tokens": 484,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 26,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 510
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "No, Elko Regional Airport is in Nevada.",
+              "latencyMs": 1961.3699000000051,
+              "usage": {
+                "input_tokens": 918,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 14,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 932
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Are both Elko Regional Airport and Gerald R. Ford International Airport located in Michigan?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1402,
+              "outputTokens": 40,
+              "totalTokens": 1442,
+              "latencyMs": 3407.9662000000026
+            },
+            "states": [
+              {
+                "answer": "No",
+                "confidence": 0.5,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "No, Elko Regional Airport is in Nevada.",
+                "confidence": 0.9,
+                "evidenceCount": 6,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:07:15.031Z",
+                "data": {
+                  "chars": 92,
+                  "scope": "mission:5ab51dae5542991779162d82"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:07:15.031Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:07:15.037Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:07:15.037Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:07:16.484Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 484,
+                  "outputTokens": 26,
+                  "totalTokens": 510,
+                  "latencyMs": 1446.5962999999974
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:07:16.484Z",
+                "data": {
+                  "confidence": 0.5,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:07:16.485Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 6
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:07:18.446Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1402,
+                  "outputTokens": 40,
+                  "totalTokens": 1442,
+                  "latencyMs": 3407.9662000000026
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:07:18.446Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:07:18.446Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 6,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ab51dae5542991779162d82",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 26,
+            "memoryRecordsBeforeCleanup": 8,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 8
+          },
+          "draft": {
+            "answer": "No",
+            "confidence": 0.5,
+            "sources": [
+              "Gerald R. Ford International Airport"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"No\",\"confidence\":0.5,\"sources\":[\"Gerald R. Ford International Airport\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0.25,
+            "exactLoss": 1,
+            "taskLoss": 0.75
+          }
+        },
+        "directGpt56": {
+          "answer": "No.",
+          "endToEndLatencyMs": 1274.8217000000004,
+          "usage": {
+            "inputTokens": 62,
+            "outputTokens": 6,
+            "reasoningTokens": 0,
+            "totalTokens": 68,
+            "modelLatencyMs": 1274.8003000000026
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "No.",
+              "latencyMs": 1274.8003000000026,
+              "usage": {
+                "input_tokens": 62,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 68
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "ragGpt56": {
+          "answer": "Unknown",
+          "endToEndLatencyMs": 1276.813000000002,
+          "usage": {
+            "inputTokens": 446,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 451,
+            "modelLatencyMs": 1276.1382999999987
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Unknown",
+              "latencyMs": 1276.1382999999987,
+              "usage": {
+                "input_tokens": 446,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 451
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.6417000000001281,
+            "selectedTitles": [
+              "Gerald R. Ford Presidential Library",
+              "Pre-Commissioning Unit",
+              "Gerald R. Ford International Airport"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "No.",
+          "endToEndLatencyMs": 9523.741699999999,
+          "usage": {
+            "inputTokens": 2562,
+            "outputTokens": 97,
+            "reasoningTokens": 0,
+            "totalTokens": 2659,
+            "modelLatencyMs": 9523.123100000004
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Elko Regional Airport location; Gerald R. Ford International Airport location\nevidence: Use each airport’s titled document to identify its state, then compare both with Michigan.\nblockers: Corpus text not supplied.\nspent: 31",
+              "latencyMs": 2368.620600000002,
+              "usage": {
+                "input_tokens": 276,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 332
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "No. “Elko Regional Airport” is in Nevada; “Gerald R. Ford International Airport” is in Michigan.",
+              "latencyMs": 3498.1356000000014,
+              "usage": {
+                "input_tokens": 1771,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1768,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 29,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1800
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "No.",
+              "latencyMs": 2447.9357999999993,
+              "usage": {
+                "input_tokens": 254,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 260
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "No.",
+              "latencyMs": 1208.4311000000016,
+              "usage": {
+                "input_tokens": 261,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 267
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Elko Regional Airport location; Gerald R. Ford International Airport location\nevidence: Use each airport’s titled document to identify its state, then compare both with Michigan.\nblockers: Corpus text not supplied.\nspent: 31",
+            "forage": "No. “Elko Regional Airport” is in Nevada; “Gerald R. Ford International Airport” is in Michigan.",
+            "build": "No.",
+            "verify": "No."
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ae2070a5542994d89d5b313",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Which performance act has a higher instrument to person ratio, Badly Drawn Boy or Wolf Alice? ",
+      "expected": "Badly Drawn Boy",
+      "executionOrder": [
+        "directGpt56",
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive"
+      ],
+      "systems": {
+        "directGpt56": {
+          "answer": "Badly Drawn Boy",
+          "endToEndLatencyMs": 1634.5037000000011,
+          "usage": {
+            "inputTokens": 66,
+            "outputTokens": 9,
+            "reasoningTokens": 0,
+            "totalTokens": 75,
+            "modelLatencyMs": 1634.4783000000025
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Badly Drawn Boy",
+              "latencyMs": 1634.4783000000025,
+              "usage": {
+                "input_tokens": 66,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 75
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "ragGpt56": {
+          "answer": "unknown",
+          "endToEndLatencyMs": 1823.0372999999963,
+          "usage": {
+            "inputTokens": 377,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 382,
+            "modelLatencyMs": 1822.571100000001
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "unknown",
+              "latencyMs": 1822.571100000001,
+              "usage": {
+                "input_tokens": 377,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 382
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.40949999999429565,
+            "selectedTitles": [
+              "Wolf Alice",
+              "Under an Hour",
+              "Tom Rothrock"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Badly Drawn Boy",
+          "endToEndLatencyMs": 23440.889200000005,
+          "usage": {
+            "inputTokens": 2303,
+            "outputTokens": 147,
+            "reasoningTokens": 0,
+            "totalTokens": 2450,
+            "modelLatencyMs": 23440.594799999977
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Compare instrument count and personnel count stated in “Badly Drawn Boy” versus “Wolf Alice.”\nevidence: Need each act’s listed instruments and number of people from those two corpus documents, then compute instruments ÷ persons.",
+              "latencyMs": 2570.0265999999974,
+              "usage": {
+                "input_tokens": 290,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 346
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "status: answered; artifacts: Badly Drawn Boy; evidence: “Badly Drawn Boy” identifies one person and a multi-instrumentalist, while “Wolf Alice” identifies four people and four instruments; blockers: none; spent: 2 documents; reusable_context: Badly Drawn Boy has the higher instrument-to-person ratio.",
+              "latencyMs": 13196.29269999999,
+              "usage": {
+                "input_tokens": 1393,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1390,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 73,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1466
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Badly Drawn Boy",
+              "latencyMs": 5938.703499999989,
+              "usage": {
+                "input_tokens": 305,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 314
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Badly Drawn Boy",
+              "latencyMs": 1735.5720000000001,
+              "usage": {
+                "input_tokens": 315,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 324
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Compare instrument count and personnel count stated in “Badly Drawn Boy” versus “Wolf Alice.”\nevidence: Need each act’s listed instruments and number of people from those two corpus documents, then compute instruments ÷ persons.",
+            "forage": "status: answered; artifacts: Badly Drawn Boy; evidence: “Badly Drawn Boy” identifies one person and a multi-instrumentalist, while “Wolf Alice” identifies four people and four instruments; blockers: none; spent: 2 documents; reusable_context: Badly Drawn Boy has the higher instrument-to-person ratio.",
+            "build": "Badly Drawn Boy",
+            "verify": "Badly Drawn Boy"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Badly Drawn Boy",
+          "endToEndLatencyMs": 4975.706900000005,
+          "usage": {
+            "inputTokens": 1281,
+            "outputTokens": 31,
+            "reasoningTokens": 0,
+            "totalTokens": 1312,
+            "modelLatencyMs": 4974.130900000004
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Wolf Alice\",\"confidence\":0.35,\"sources\":[\"Wolf Alice\"]}",
+              "latencyMs": 2869.022299999997,
+              "usage": {
+                "input_tokens": 415,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 22,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 437
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            },
+            {
+              "name": "adaptive-guard",
+              "text": "Badly Drawn Boy",
+              "latencyMs": 2105.108600000007,
+              "usage": {
+                "input_tokens": 866,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 9,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 875
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Which performance act has a higher instrument to person ratio, Badly Drawn Boy or Wolf Alice?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 2,
+              "iterations": 2,
+              "inputTokens": 1281,
+              "outputTokens": 31,
+              "totalTokens": 1312,
+              "latencyMs": 4974.130900000004
+            },
+            "states": [
+              {
+                "answer": "Wolf Alice",
+                "confidence": 0.35,
+                "evidenceCount": 1,
+                "conflict": false
+              },
+              {
+                "answer": "Badly Drawn Boy",
+                "confidence": 0.9,
+                "evidenceCount": 6,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:07:57.424Z",
+                "data": {
+                  "chars": 94,
+                  "scope": "mission:5ae2070a5542994d89d5b313"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:07:57.424Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:07:57.424Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:07:57.424Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:08:00.294Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 415,
+                  "outputTokens": 22,
+                  "totalTokens": 437,
+                  "latencyMs": 2869.022299999997
+                }
+              },
+              {
+                "name": "on_low_confidence",
+                "at": "2026-08-05T17:08:00.294Z",
+                "data": {
+                  "confidence": 0.35,
+                  "evidenceCount": 1
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:08:00.294Z",
+                "data": {
+                  "cell": "guard",
+                  "evidenceCount": 6
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:08:02.399Z",
+                "data": {
+                  "calls": 2,
+                  "iterations": 2,
+                  "inputTokens": 1281,
+                  "outputTokens": 31,
+                  "totalTokens": 1312,
+                  "latencyMs": 4974.130900000004
+                }
+              },
+              {
+                "name": "on_loop_stopped",
+                "at": "2026-08-05T17:08:02.399Z",
+                "data": {
+                  "reason": "goal_reached"
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:08:02.399Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 6,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae2070a5542994d89d5b313",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": true,
+            "earlyStopped": false,
+            "hookEvents": 10,
+            "memoryEvents": 26,
+            "memoryRecordsBeforeCleanup": 8,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 8
+          },
+          "draft": {
+            "answer": "Wolf Alice",
+            "confidence": 0.35,
+            "sources": [
+              "Wolf Alice"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Wolf Alice\",\"confidence\":0.35,\"sources\":[\"Wolf Alice\"]}"
+          },
+          "quality": {
+            "exactMatch": 1,
+            "tokenF1": 1,
+            "exactLoss": 0,
+            "taskLoss": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "5ae4a3265542995ad6573de5",
+      "type": "comparison",
+      "level": "hard",
+      "question": "Hayden is a singer-songwriter from Canada, but where does Buck-Tick hail from?",
+      "expected": "Fujioka, Gunma",
+      "executionOrder": [
+        "ragGpt56",
+        "agentHive",
+        "adaptiveMemoryHive",
+        "directGpt56"
+      ],
+      "systems": {
+        "ragGpt56": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 1044.7299000000057,
+          "usage": {
+            "inputTokens": 418,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 423,
+            "modelLatencyMs": 1044.295100000003
+          },
+          "calls": [
+            {
+              "name": "rag-answer",
+              "text": "Japan",
+              "latencyMs": 1044.295100000003,
+              "usage": {
+                "input_tokens": 418,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 423
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "retrieval": {
+            "kind": "BM25",
+            "latencyMs": 0.4095999999990454,
+            "selectedTitles": [
+              "Hayden (musician)",
+              "Hailstorm Alley",
+              "Atsushi Sakurai"
+            ]
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "agentHive": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 9378.243200000012,
+          "usage": {
+            "inputTokens": 2221,
+            "outputTokens": 72,
+            "reasoningTokens": 0,
+            "totalTokens": 2293,
+            "modelLatencyMs": 9378.003799999991
+          },
+          "calls": [
+            {
+              "name": "hive-survey",
+              "text": "status: ready\nartifacts: Hayden (musician); Buck-Tick\nevidence: Verify Hayden’s Canadian identity, then use Buck-Tick’s article to extract its stated origin.\nblockers: Corpus text not supplied.\nspent: 24 words\nre",
+              "latencyMs": 2874.1600000000035,
+              "usage": {
+                "input_tokens": 271,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 56,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 327
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "incomplete",
+              "cell": "survey",
+              "role": "scout",
+              "allocation": 56
+            },
+            {
+              "name": "hive-forage",
+              "text": "Japan.",
+              "latencyMs": 2971.202999999994,
+              "usage": {
+                "input_tokens": 1482,
+                "input_tokens_details": {
+                  "cache_write_tokens": 1479,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 1488
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "forage",
+              "role": "forager",
+              "allocation": 123
+            },
+            {
+              "name": "hive-build",
+              "text": "Japan",
+              "latencyMs": 2392.3948999999993,
+              "usage": {
+                "input_tokens": 231,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 236
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder",
+              "allocation": 108
+            },
+            {
+              "name": "hive-verify",
+              "text": "Japan",
+              "latencyMs": 1140.2458999999944,
+              "usage": {
+                "input_tokens": 237,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 242
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "verify",
+              "role": "guard",
+              "allocation": 129
+            }
+          ],
+          "plan": {
+            "totalBudget": 416,
+            "allocations": {
+              "survey": 56,
+              "forage": 123,
+              "build": 108,
+              "verify": 129
+            },
+            "waves": [
+              [
+                "survey"
+              ],
+              [
+                "forage"
+              ],
+              [
+                "build"
+              ],
+              [
+                "verify"
+              ]
+            ]
+          },
+          "cellOutputs": {
+            "survey": "status: ready\nartifacts: Hayden (musician); Buck-Tick\nevidence: Verify Hayden’s Canadian identity, then use Buck-Tick’s article to extract its stated origin.\nblockers: Corpus text not supplied.\nspent: 24 words\nre",
+            "forage": "Japan.",
+            "build": "Japan",
+            "verify": "Japan"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "adaptiveMemoryHive": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 2489.293300000005,
+          "usage": {
+            "inputTokens": 455,
+            "outputTokens": 31,
+            "reasoningTokens": 0,
+            "totalTokens": 486,
+            "modelLatencyMs": 2487.691599999991
+          },
+          "calls": [
+            {
+              "name": "adaptive-builder",
+              "text": "{\"answer\":\"Japan\",\"confidence\":0.85,\"sources\":[\"Hayden (musician)\",\"Atsushi Sakurai\"]}",
+              "latencyMs": 2487.691599999991,
+              "usage": {
+                "input_tokens": 455,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 486
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed",
+              "cell": "build",
+              "role": "builder"
+            }
+          ],
+          "controller": {
+            "goal": "Answer the multi-hop question accurately: Hayden is a singer-songwriter from Canada, but where does Buck-Tick hail from?",
+            "success": {
+              "confidenceMin": 0.85,
+              "evidenceMin": 2
+            },
+            "budget": {
+              "maxModelCalls": 2,
+              "maxIterations": 2,
+              "maxOutputTokens": 416,
+              "maxTotalTokens": 2000,
+              "maxLatencyMs": 15000
+            },
+            "usage": {
+              "calls": 1,
+              "iterations": 1,
+              "inputTokens": 455,
+              "outputTokens": 31,
+              "totalTokens": 486,
+              "latencyMs": 2487.691599999991
+            },
+            "states": [
+              {
+                "answer": "Japan",
+                "confidence": 0.85,
+                "evidenceCount": 2,
+                "conflict": false
+              }
+            ],
+            "events": [
+              {
+                "name": "on_input_validated",
+                "at": "2026-08-05T17:08:12.824Z",
+                "data": {
+                  "chars": 78,
+                  "scope": "mission:5ae4a3265542995ad6573de5"
+                }
+              },
+              {
+                "name": "before_tool_call",
+                "at": "2026-08-05T17:08:12.824Z",
+                "data": {
+                  "tool": "bm25_retrieve"
+                }
+              },
+              {
+                "name": "after_retrieval",
+                "at": "2026-08-05T17:08:12.825Z",
+                "data": {
+                  "tool": "bm25_retrieve",
+                  "candidates": 10
+                }
+              },
+              {
+                "name": "before_cell_run",
+                "at": "2026-08-05T17:08:12.826Z",
+                "data": {
+                  "cell": "builder",
+                  "evidenceCount": 3
+                }
+              },
+              {
+                "name": "after_model_call",
+                "at": "2026-08-05T17:08:15.313Z",
+                "data": {
+                  "calls": 1,
+                  "iterations": 1,
+                  "inputTokens": 455,
+                  "outputTokens": 31,
+                  "totalTokens": 486,
+                  "latencyMs": 2487.691599999991
+                }
+              },
+              {
+                "name": "on_goal_reached",
+                "at": "2026-08-05T17:08:15.313Z",
+                "data": {
+                  "reason": "goal_reached",
+                  "confidence": 0.85,
+                  "evidenceCount": 2
+                }
+              },
+              {
+                "name": "on_session_end",
+                "at": "2026-08-05T17:08:15.314Z",
+                "data": {
+                  "agentDeleted": 1,
+                  "teamDeleted": 3,
+                  "missionDeleted": 1
+                }
+              }
+            ]
+          },
+          "monitoring": {
+            "traceId": "mission:5ae4a3265542995ad6573de5",
+            "inputValidated": true,
+            "allowedTools": [
+              "bm25_retrieve"
+            ],
+            "toolCalls": 1,
+            "policyDenials": 0,
+            "repairTriggered": false,
+            "earlyStopped": true,
+            "hookEvents": 7,
+            "memoryEvents": 16,
+            "memoryRecordsBeforeCleanup": 5,
+            "memoryRecordsAfterCleanup": 0,
+            "deletions": 5
+          },
+          "draft": {
+            "answer": "Japan",
+            "confidence": 0.85,
+            "sources": [
+              "Hayden (musician)",
+              "Atsushi Sakurai"
+            ],
+            "parseSucceeded": true,
+            "raw": "{\"answer\":\"Japan\",\"confidence\":0.85,\"sources\":[\"Hayden (musician)\",\"Atsushi Sakurai\"]}"
+          },
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        },
+        "directGpt56": {
+          "answer": "Japan",
+          "endToEndLatencyMs": 1986.5016000000032,
+          "usage": {
+            "inputTokens": 63,
+            "outputTokens": 5,
+            "reasoningTokens": 0,
+            "totalTokens": 68,
+            "modelLatencyMs": 1986.4861999999994
+          },
+          "calls": [
+            {
+              "name": "direct-answer",
+              "text": "Japan",
+              "latencyMs": 1986.4861999999994,
+              "usage": {
+                "input_tokens": 63,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 5,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 68
+              },
+              "returnedModel": "gpt-5.6-sol",
+              "status": "completed"
+            }
+          ],
+          "quality": {
+            "exactMatch": 0,
+            "tokenF1": 0,
+            "exactLoss": 1,
+            "taskLoss": 1
+          }
+        }
+      }
+    }
+  ]
+}
