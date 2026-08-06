@@ -64,10 +64,19 @@ def main() -> int:
             assert bundled == source, f"{platform} Python runtime is stale: {relative.as_posix()}"
         assert (runtime / "hive.py").is_file(), f"{platform} runtime entry point is missing."
 
+    space_runtime = ROOT / "space" / "agent_hive"
+    for name in ("__init__.py", "mission.py", "planner.py", "prompt_compiler.py", "protocol.py", "token_counter.py"):
+        assert (space_runtime / name).read_bytes() == (ROOT / "src" / "agent_hive" / name).read_bytes(), f"Static Space Python runtime is stale: {name}"
+    space_readme = (ROOT / "space" / "README.md").read_text(encoding="utf-8")
+    assert "sdk: static" in space_readme and "app_file: index.html" in space_readme, "Static Space metadata is invalid."
+
     ignored_trees = {".git", ".hive", ".venv", "__pycache__", "tmp"}
+    allowed_browser_bridge = Path("space/app.js")
     stale = [path for path in ROOT.rglob("*") if path.suffix.lower() in {".js", ".mjs", ".cjs"}
-             and not any(part in ignored_trees for part in path.relative_to(ROOT).parts)]
+             and not any(part in ignored_trees for part in path.relative_to(ROOT).parts)
+             and path.relative_to(ROOT) != allowed_browser_bridge]
     assert not stale, "JavaScript files remain after the Python migration: " + ", ".join(str(path.relative_to(ROOT)) for path in stale)
+    assert (ROOT / allowed_browser_bridge).is_file(), "Static Space browser bridge is missing."
     assert not (ROOT / "package.json").exists(), "Node package.json remains after the Python migration."
     _validate_markdown_links()
     print("Repository structure is valid.")

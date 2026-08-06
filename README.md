@@ -4,6 +4,8 @@
 
 Agent Hive is a local-first orchestration kit for Codex and Claude Code. It turns a multilingual **Mission Genome** into dependency-aware **honeycomb cells**, routes each cell by capability tier, protects a recovery reserve, and emits compact `HIVE/1` worker payloads.
 
+Try the read-only planner in the [Agent Hive Playground on Hugging Face](https://huggingface.co/spaces/mckova/agent-hive).
+
 Prompt compression is one organ of the hive, not the whole product. The compiler compares lossless representations with a named counter; the governor decides what should run, in what order, on which tier, and when spending must stop.
 
 ```mermaid
