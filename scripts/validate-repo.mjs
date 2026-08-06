@@ -30,9 +30,9 @@ assert.equal(codexManifest.version, packageJson.version, "Codex plugin version d
 assert.equal(claudeManifest.version, packageJson.version, "Claude plugin version differs from package.json.");
 assert.equal(marketplace.plugins[0].version, packageJson.version, "Claude marketplace version differs from package.json.");
 
-const requiredAttribution = "Agent Hive — Copyright (c) 2026 May Sidon — https://github.com/mckova/agent-hive";
+const requiredAttribution = "Copyright (c) 2026 May Sidon | Agent Hive | https://github.com/mckova/agent-hive";
 assert.equal(packageJson.author, "May Sidon", "Package author differs from the copyright holder.");
-assert.equal(packageJson.license, "SEE LICENSE IN LICENSE", "Custom license metadata must point to LICENSE.");
+assert.equal(packageJson.license, "MIT", "Package license must use the standard MIT SPDX identifier.");
 for (const relative of ["LICENSE", "NOTICE", "README.md"]) {
   const contents = await readFile(path.join(root, relative), "utf8");
   assert.ok(contents.includes(requiredAttribution), `${relative} is missing the required attribution.`);
