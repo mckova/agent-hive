@@ -21,7 +21,25 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(sum(cell["allocation"] for cell in plan["cells"]), plan["budget"]["total"] - plan["budget"]["reserve"])
 
     def test_dependency_graph_produces_ordered_waves(self):
-        self.assertEqual(create_plan(default_mission())["waves"], [["survey"], ["design"], ["build"], ["verify"], ["distill"]])
+        self.assertEqual(create_plan(default_mission())["waves"], [["survey", "forage"], ["design"], ["build"], ["verify"], ["distill"]])
+
+    def test_default_route_becomes_mission_specific_worker_contracts(self):
+        mission = default_mission()
+        mission["mission"].update({
+            "goal": "Add passwordless sign-in without breaking existing users",
+            "must": ["Preserve existing sessions"],
+            "avoid": ["Do not log authentication tokens"],
+            "doneWhen": ["Security tests pass"],
+        })
+        plan = create_plan(mission)
+        self.assertEqual([cell["role"] for cell in plan["cells"]],
+                         ["scout", "forager", "architect", "builder", "guard", "keeper"])
+        self.assertTrue(all(mission["mission"]["goal"] in cell["title"] for cell in plan["cells"]))
+        builder = next(cell for cell in plan["cells"] if cell["role"] == "builder")
+        guard = next(cell for cell in plan["cells"] if cell["role"] == "guard")
+        self.assertIn("Preserve existing sessions", " ".join(builder["instructions"]))
+        self.assertIn("Security tests pass", " ".join(guard["instructions"]))
+        self.assertIn("LOCAL:", compile_payload(plan, builder))
 
     def test_hive_protocol_preserves_non_latin_mission_text(self):
         path = Path(__file__).parents[1] / "examples" / "missions" / "japanese-release.json"
@@ -69,9 +87,12 @@ class PlannerTests(unittest.TestCase):
 
     def test_lifecycle_unlocks_dependencies_and_reserve_release_is_explicit(self):
         plan = create_plan(default_mission(), datetime(2026, 1, 1, tzinfo=timezone.utc))
-        self.assertEqual([cell["id"] for cell in next_ready_cells(plan)], ["survey"])
+        self.assertEqual([cell["id"] for cell in next_ready_cells(plan)], ["survey", "forage"])
         usage = record_cell_usage(plan, {}, {"id": "survey", "status": "done", "used": 1000,
                                               "artifacts": ["map.md"], "evidence": ["test"]})
+        self.assertEqual([cell["id"] for cell in next_ready_cells(plan, usage)], ["forage"])
+        usage = record_cell_usage(plan, usage, {"id": "forage", "status": "done", "used": 500,
+                                                "artifacts": ["evidence.md"], "evidence": ["paths cited"]})
         self.assertEqual([cell["id"] for cell in next_ready_cells(plan, usage)], ["design"])
         revised = rebalance_plan(plan, usage, release_reserve=True)
         self.assertTrue(revised["budget"]["reserveReleased"]); self.assertEqual(revised["budget"]["allocated"], plan["budget"]["total"])

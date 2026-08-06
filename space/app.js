@@ -9,6 +9,12 @@ const PYTHON_FILES = [
 ];
 
 const EXAMPLES = {
+  demo: {
+    goal: "Add secure passwordless sign-in without breaking existing email/password users",
+    must: "Keep backward compatibility\nPreserve existing sessions\nAdd migration and rollback paths",
+    avoid: "Do not log secrets or authentication tokens\nDo not deploy automatically",
+    done: "Existing login tests pass\nThe new flow has security tests\nA migration guide is documented",
+  },
   he: {
     goal: "הוסף אימות דו-שלבי לאפליקציה בלי לשבור משתמשים קיימים",
     must: "שמור על תאימות לאחור\nהוסף בדיקות אבטחה",
@@ -61,6 +67,10 @@ def build_plan_json(goal, must, avoid, done, total, reserve, workers, quality, t
     status.textContent = "Python engine ready · runs locally in your browser";
     dot.classList.add("ready");
     document.querySelector("#plan-button").disabled = false;
+    if (!value("goal").trim()) {
+      applyExample(EXAMPLES.demo);
+      runPlanner(false);
+    }
   } catch (error) {
     console.error(error);
     status.textContent = "Python engine could not load. Refresh to retry.";
@@ -72,6 +82,65 @@ def build_plan_json(goal, must, avoid, done, total, reserve, workers, quality, t
 function value(id) { return document.querySelector(`#${id}`).value; }
 function number(id) { return Number(value(id)); }
 function formatNumber(value) { return new Intl.NumberFormat().format(value); }
+
+function element(tag, className = "", text = "") {
+  const item = document.createElement(tag);
+  if (className) item.className = className;
+  if (text) item.textContent = text;
+  return item;
+}
+
+function renderConstraintList(id, items, emptyText) {
+  const list = document.querySelector(`#${id}`);
+  list.replaceChildren();
+  const values = items.length ? items : [emptyText];
+  values.forEach((text) => list.appendChild(element("li", items.length ? "" : "empty", text)));
+}
+
+function renderAssignments(assignments) {
+  const grid = document.querySelector("#assignment-grid");
+  grid.replaceChildren();
+  assignments.forEach((assignment) => {
+    const card = element("article", "assignment-card");
+    card.dataset.role = assignment.role;
+
+    const head = element("div", "assignment-head");
+    const identity = element("div");
+    identity.appendChild(element("span", "assignment-wave", `WAVE ${assignment.wave} · ${assignment.id.toUpperCase()}`));
+    identity.appendChild(element("h3", "", assignment.roleName));
+    head.appendChild(identity);
+    head.appendChild(element("span", "role-pill", assignment.required ? "REQUIRED" : "OPTIONAL"));
+    card.appendChild(head);
+
+    const task = element("p", "assignment-task", assignment.task);
+    task.dir = "auto";
+    card.appendChild(task);
+    card.appendChild(element("p", "assignment-purpose", assignment.purpose));
+
+    const contract = element("div", "worker-contract");
+    contract.appendChild(element("span", "contract-label", "ASSIGNMENT"));
+    const instructions = element("ol");
+    assignment.instructions.forEach((instruction) => {
+      const row = element("li", "", instruction);
+      row.dir = "auto";
+      instructions.appendChild(row);
+    });
+    contract.appendChild(instructions);
+    card.appendChild(contract);
+
+    const deliverable = element("div", "deliverable");
+    deliverable.appendChild(element("span", "contract-label", "MUST RETURN"));
+    deliverable.appendChild(element("p", "", assignment.deliverable));
+    card.appendChild(deliverable);
+
+    const meta = element("div", "assignment-meta");
+    meta.appendChild(element("span", "tier", assignment.modelTier));
+    meta.appendChild(element("span", "", `${formatNumber(assignment.allocation)} tokens max`));
+    meta.appendChild(element("span", "", `depends on: ${assignment.dependencies.join(" + ") || "queen"}`));
+    card.appendChild(meta);
+    grid.appendChild(card);
+  });
+}
 
 function renderTable(bodyId, rows, tierColumn = -1) {
   const body = document.querySelector(`#${bodyId}`);
@@ -88,8 +157,14 @@ function renderTable(bodyId, rows, tierColumn = -1) {
   });
 }
 
-function renderResult(result) {
+function renderResult(result, shouldScroll = true) {
   const metrics = result.metrics;
+  document.querySelector("#queen-goal").textContent = result.queen.goal;
+  document.querySelector("#queen-rule").textContent = result.queen.rule;
+  renderConstraintList("queen-must", result.queen.must, "No explicit must constraints—Scout will identify implied requirements.");
+  renderConstraintList("queen-avoid", result.queen.avoid, "No explicit avoid constraints—Guard will gate risky actions.");
+  renderConstraintList("queen-done", result.queen.doneWhen, "No explicit criteria—Architect must define verifiable acceptance evidence.");
+  renderAssignments(result.assignments);
   document.querySelector("#metric-cells").textContent = metrics.cells;
   document.querySelector("#metric-waves").textContent = metrics.waves;
   document.querySelector("#metric-spendable").textContent = formatNumber(metrics.spendable);
@@ -103,24 +178,30 @@ function renderResult(result) {
   document.querySelector("#guardrail-json").textContent = JSON.stringify(result.guardrails, null, 2);
   const results = document.querySelector("#results");
   results.hidden = false;
-  results.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (shouldScroll) results.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-document.querySelector("#planner-form").addEventListener("submit", (event) => {
-  event.preventDefault();
+function runPlanner(shouldScroll = true) {
   const error = document.querySelector("#form-error");
   error.textContent = "";
-  if (!buildPlan) { error.textContent = "The Python engine is still loading."; return; }
+  if (!buildPlan) { error.textContent = "The Python engine is still loading."; return false; }
   try {
     const serialized = buildPlan(
       value("goal"), value("must"), value("avoid"), value("done"), number("total"),
       number("reserve"), number("workers"), value("quality"), value("target"),
     );
-    renderResult(JSON.parse(String(serialized)));
+    renderResult(JSON.parse(String(serialized)), shouldScroll);
+    return true;
   } catch (cause) {
     console.error(cause);
     error.textContent = String(cause).replace(/^PythonError:\s*/, "").split("\n").at(-1);
+    return false;
   }
+}
+
+document.querySelector("#planner-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  runPlanner(true);
 });
 
 document.querySelector("#reserve").addEventListener("input", (event) => {
@@ -132,11 +213,14 @@ document.querySelector("#workers").addEventListener("input", (event) => {
 
 document.querySelectorAll("[data-example]").forEach((button) => {
   button.addEventListener("click", () => {
-    const example = EXAMPLES[button.dataset.example];
-    Object.entries(example).forEach(([key, text]) => { document.querySelector(`#${key}`).value = text; });
+    applyExample(EXAMPLES[button.dataset.example]);
     document.querySelector("#goal").focus();
   });
 });
+
+function applyExample(example) {
+  Object.entries(example).forEach(([key, text]) => { document.querySelector(`#${key}`).value = text; });
+}
 
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => {

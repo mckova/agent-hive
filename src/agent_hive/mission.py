@@ -24,7 +24,7 @@ def default_mission() -> dict[str, Any]:
         "policy": {"maxWorkers": 3, "qualityFloor": "balanced"},
         "guardrails": default_guardrails(),
         "models": {},
-        "cells": default_cells(),
+        "cells": [],
     }
 
 
@@ -39,14 +39,101 @@ def default_guardrails() -> dict[str, Any]:
     }
 
 
-def default_cells() -> list[dict[str, Any]]:
+def decompose_mission(
+    goal: str,
+    must: list[str] | None = None,
+    avoid: list[str] | None = None,
+    done_when: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Create role-specific worker assignments from the queen's mission genome."""
+    clean_goal = " ".join((goal or "the mission").split())
+    excerpt = clean_goal if len(clean_goal) <= 180 else clean_goal[:177].rstrip() + "..."
+    must_items = _clean_strings(must)
+    avoid_items = _clean_strings(avoid)
+    done_items = _clean_strings(done_when)
+    success = "; ".join(done_items) if done_items else "produce verifiable evidence that the mission goal is complete"
+
+    def job(
+        identifier: str,
+        title: str,
+        role: str,
+        priority: int,
+        complexity: int,
+        risk: int,
+        dependencies: list[str],
+        required: bool,
+        instructions: list[str],
+        actions: list[str],
+    ) -> dict[str, Any]:
+        cell = _cell(identifier, title, role, priority, complexity, risk, dependencies, required)
+        cell.update({"instructions": instructions, "actions": actions, "paths": []})
+        return cell
+
+    constraint_instruction = (
+        "Treat these as hard requirements: " + "; ".join(must_items)
+        if must_items else "Identify the hard requirements implied by the mission without inventing new scope."
+    )
+    forbidden_instruction = (
+        "Protect against these forbidden outcomes: " + "; ".join(avoid_items)
+        if avoid_items else "Record risky or irreversible actions that need an explicit gate."
+    )
     return [
-        _cell("survey", "Map the territory", "scout", 5, 2, 2, [], True),
-        _cell("design", "Design the route", "architect", 5, 3, 3, ["survey"], True),
-        _cell("build", "Produce the required outcome", "builder", 5, 4, 3, ["design"], True),
-        _cell("verify", "Verify against the mission", "guard", 5, 3, 5, ["build"], True),
-        _cell("distill", "Distill reusable hive memory", "keeper", 3, 1, 1, ["verify"], False),
+        job(
+            "survey", f"Map requirements and unknowns for: {excerpt}", "scout", 5, 2, 2, [], True,
+            [
+                f"Read the queen mission exactly as written: {clean_goal}",
+                constraint_instruction,
+                "Return affected areas, assumptions, unknowns, risks, and questions; do not change project files.",
+            ], ["read"],
+        ),
+        job(
+            "forage", f"Gather evidence and reusable assets for: {excerpt}", "forager", 4, 2, 2, [], True,
+            [
+                "Find only project files, tests, documentation, prior decisions, and interfaces relevant to the queen mission.",
+                "Cite exact paths or evidence and separate verified facts from assumptions.",
+                "Stop when the evidence is sufficient for design; do not implement the solution.",
+            ], ["read"],
+        ),
+        job(
+            "design", f"Design the smallest safe route to: {excerpt}", "architect", 5, 4, 3,
+            ["survey", "forage"], True,
+            [
+                "Use the scout's requirement map and the forager's evidence pack as inputs.",
+                constraint_instruction,
+                f"Produce an ordered implementation plan and acceptance matrix for: {success}.",
+            ], ["read"],
+        ),
+        job(
+            "build", f"Implement the approved route for: {excerpt}", "builder", 5, 5, 4, ["design"], True,
+            [
+                "Implement only the architect's approved plan and keep the change set focused on the queen mission.",
+                constraint_instruction,
+                forbidden_instruction,
+                "Return changed artifacts, focused checks, actual token usage, and any blocker; do not claim success without evidence.",
+            ], ["read", "write"],
+        ),
+        job(
+            "verify", f"Independently verify the result for: {excerpt}", "guard", 5, 4, 5, ["build"], True,
+            [
+                f"Build a pass/fail evidence matrix for these completion criteria: {success}.",
+                constraint_instruction,
+                forbidden_instruction,
+                "Check security, regressions, tool accuracy, and budget telemetry; block completion on missing evidence.",
+            ], ["read"],
+        ),
+        job(
+            "distill", f"Distill verified hive memory for: {excerpt}", "keeper", 2, 1, 1, ["verify"], False,
+            [
+                "Keep only verified decisions, reusable context, artifact paths, and unresolved risks from this run.",
+                "Exclude secrets, raw prompt repetition, stale assumptions, and unverified claims.",
+                "Return a compact handoff that reduces context cost for the next hive run.",
+            ], ["read", "write"],
+        ),
     ]
+
+
+def default_cells() -> list[dict[str, Any]]:
+    return decompose_mission("Describe the desired outcome in any language.")
 
 
 def _cell(identifier: str, title: str, role: str, priority: int, complexity: int,
@@ -113,7 +200,13 @@ def validate_mission(value: Any) -> list[str]:
                 errors.append(f"models.{tier}.{target} must be a non-empty string.")
 
     raw_cells = value.get("cells")
-    cells = raw_cells if isinstance(raw_cells, list) and raw_cells else default_cells()
+    goal = mission.get("goal") if isinstance(mission, dict) and isinstance(mission.get("goal"), str) else "the mission"
+    cells = raw_cells if isinstance(raw_cells, list) and raw_cells else decompose_mission(
+        goal,
+        mission.get("must") if isinstance(mission, dict) else None,
+        mission.get("avoid") if isinstance(mission, dict) else None,
+        mission.get("doneWhen") if isinstance(mission, dict) else None,
+    )
     identifiers: set[str] = set()
     for index, candidate in enumerate(cells):
         prefix = f"cells[{index}]"
@@ -168,7 +261,9 @@ def normalized_mission(value: dict[str, Any]) -> dict[str, Any]:
     mission = value["mission"]
     budget = value["budget"]
     policy = value["policy"]
-    cells = value.get("cells") or default_cells()
+    cells = value.get("cells") or decompose_mission(
+        mission["goal"], mission.get("must"), mission.get("avoid"), mission.get("doneWhen")
+    )
     return {
         "schemaVersion": 1,
         "mission": {

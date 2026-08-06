@@ -12,6 +12,39 @@ MAX_GOAL_CHARS = 6_000
 MAX_LIST_ITEMS = 20
 MAX_ITEM_CHARS = 1_000
 
+ROLE_GUIDE = {
+    "scout": {
+        "name": "Scout bee",
+        "purpose": "Turns the queen's prompt into a factual requirement and risk map before anyone changes the project.",
+        "deliverable": "Requirement map: affected areas, hard constraints, assumptions, unknowns, risks, and questions.",
+    },
+    "forager": {
+        "name": "Forager bee",
+        "purpose": "Collects the smallest evidence pack the hive needs instead of making every worker reread the whole project.",
+        "deliverable": "Evidence pack: relevant files, tests, interfaces, prior decisions, and cited facts separated from assumptions.",
+    },
+    "architect": {
+        "name": "Architect bee",
+        "purpose": "Combines requirements and evidence into a dependency-aware route the builder can execute.",
+        "deliverable": "Approved route: ordered implementation steps, affected artifacts, risks, gates, and an acceptance matrix.",
+    },
+    "builder": {
+        "name": "Builder bee",
+        "purpose": "Produces the requested outcome inside the route and boundaries approved by the architect.",
+        "deliverable": "Focused change set or requested artifact, plus focused checks, evidence, blockers, and actual usage.",
+    },
+    "guard": {
+        "name": "Guard bee",
+        "purpose": "Independently decides whether the result satisfies the queen instead of trusting the builder's claim.",
+        "deliverable": "Pass/fail evidence matrix covering every must, avoid, done-when, regression, security, and budget check.",
+    },
+    "keeper": {
+        "name": "Keeper bee",
+        "purpose": "Keeps only verified reusable context so the next run starts smaller and does not inherit stale memory.",
+        "deliverable": "Compact handoff: verified decisions, artifact paths, reusable context, and unresolved risks—with no secrets.",
+    },
+}
+
 
 def build_playground_result(
     goal: str,
@@ -56,6 +89,31 @@ def build_playground_result(
     best = variants[0]
     payloads = compile_all_payloads(plan, target)
 
+    wave_by_cell = {
+        identifier: index
+        for index, wave in enumerate(plan["waves"], start=1)
+        for identifier in wave
+    }
+    assignments = []
+    for cell in plan["cells"]:
+        guide = ROLE_GUIDE[cell["role"]]
+        assignments.append({
+            "id": cell["id"],
+            "role": cell["role"],
+            "roleName": guide["name"],
+            "purpose": guide["purpose"],
+            "task": cell["title"],
+            "instructions": cell.get("instructions") or [],
+            "deliverable": guide["deliverable"],
+            "wave": wave_by_cell[cell["id"]],
+            "dependencies": cell["dependencies"],
+            "modelTier": cell["modelTier"],
+            "allocation": cell["allocation"],
+            "required": cell["required"],
+            "risk": cell["risk"],
+            "priority": cell["priority"],
+        })
+
     plan_rows = [[
         cell["id"], cell["role"], cell["modelTier"], cell["allocation"],
         ", ".join(cell["dependencies"]) or "—", "yes" if cell["required"] else "no",
@@ -78,6 +136,14 @@ def build_playground_result(
     )
     return {
         "summary": summary,
+        "queen": {
+            "goal": plan["mission"]["goal"],
+            "must": plan["mission"]["must"],
+            "avoid": plan["mission"]["avoid"],
+            "doneWhen": plan["mission"]["doneWhen"],
+            "rule": "The queen owns intent and constraints. Workers receive scoped contracts and cannot redefine the mission.",
+        },
+        "assignments": assignments,
         "metrics": {
             "cells": len(plan["cells"]),
             "waves": len(plan["waves"]),

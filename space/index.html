@@ -24,15 +24,23 @@
       <section class="hero">
         <p class="eyebrow">MULTILINGUAL · BUDGET-AWARE · GUARDED</p>
         <h1>Give the queen a mission.<br><span>Build the right hive.</span></h1>
-        <p class="lede">Turn a goal in any language into dependency-aware worker cells, model tiers, a protected token reserve and copy-ready HIVE/1 payloads.</p>
+        <p class="lede">See one central prompt become six concrete worker contracts: who does what, what each bee must return, which model tier it needs, how many tokens it gets, and what must finish first.</p>
         <div class="runtime-pill"><span id="runtime-dot"></span><span id="runtime-status">Loading the Python planning engine…</span></div>
+      </section>
+
+      <section class="proof-strip" aria-label="How Agent Hive works">
+        <article><span>QUEEN</span><strong>Locks the mission</strong><p>Goal, constraints, forbidden outcomes, and proof of completion stay immutable.</p></article>
+        <div aria-hidden="true">→</div>
+        <article><span>WORKER CELLS</span><strong>Receive scoped contracts</strong><p>Scout, Forager, Architect, Builder, Guard, and Keeper each get only the context they need.</p></article>
+        <div aria-hidden="true">→</div>
+        <article><span>HIVE OUTPUT</span><strong>Returns evidence</strong><p>Artifacts, checks, blockers, actual usage, and reusable context flow back through the guard.</p></article>
       </section>
 
       <section class="workspace" aria-label="Agent Hive planner">
         <form id="planner-form" class="mission-panel">
           <div class="section-heading">
-            <div><span class="step">01</span><h2>Mission Genome</h2></div>
-            <p>Your text is processed in this browser and is not stored.</p>
+            <div><span class="step">01</span><h2>Queen Mission</h2></div>
+            <p>Enter your prompt—or edit the loaded example. Nothing is stored.</p>
           </div>
           <label class="field field-wide">
             <span>Mission goal</span>
@@ -56,22 +64,35 @@
             <button type="button" data-example="es">Español</button>
             <button type="button" data-example="ja">日本語</button>
           </div>
-          <button id="plan-button" class="primary-button" type="submit" disabled>Build the hive plan <span aria-hidden="true">→</span></button>
+          <button id="plan-button" class="primary-button" type="submit" disabled>Decompose mission into hive tasks <span aria-hidden="true">→</span></button>
           <p id="form-error" class="error" role="alert"></p>
         </form>
 
         <section id="results" class="results" hidden aria-live="polite">
           <div class="section-heading">
-            <div><span class="step">02</span><h2>Hive Blueprint</h2></div>
-            <p>Deterministic planning preview. No model calls.</p>
+            <div><span class="step">02</span><h2>Mission Decomposition</h2></div>
+            <p>This is the actual work split produced from the queen prompt.</p>
           </div>
+          <article class="queen-card">
+            <div class="queen-card-heading"><span class="queen-mark" aria-hidden="true">Q</span><div><small>IMMUTABLE SOURCE OF TRUTH</small><h3>Queen contract</h3></div></div>
+            <blockquote id="queen-goal" dir="auto"></blockquote>
+            <p id="queen-rule" class="queen-rule"></p>
+            <div class="queen-constraints">
+              <div><span>MUST</span><ul id="queen-must"></ul></div>
+              <div><span>AVOID</span><ul id="queen-avoid"></ul></div>
+              <div><span>DONE WHEN</span><ul id="queen-done"></ul></div>
+            </div>
+          </article>
+          <div class="decomposition-label"><span>QUEEN DELEGATES</span><strong>Each card below is a separate worker contract—not a generic phase label.</strong></div>
+          <div id="assignment-grid" class="assignment-grid"></div>
           <div class="metrics">
             <article><strong id="metric-cells">—</strong><span>cells</span></article>
             <article><strong id="metric-waves">—</strong><span>waves</span></article>
             <article><strong id="metric-spendable">—</strong><span>spendable</span></article>
             <article><strong id="metric-reserve">—</strong><span>reserve</span></article>
           </div>
-          <div class="wave-card"><span>DEPENDENCY ROUTE</span><strong id="wave-route"></strong></div>
+          <div class="wave-card"><span>EXECUTION WAVES</span><strong id="wave-route"></strong></div>
+          <div class="output-proof"><strong>Want the exact prompt sent to every worker?</strong><span>Open the HIVE/1 tab below. It contains the mission, scoped task, model tier, token ceiling, dependencies, guardrails, and required return contract for each bee.</span></div>
           <div class="tabs" role="tablist" aria-label="Plan outputs">
             <button type="button" class="tab active" data-tab="plan" role="tab">Plan</button>
             <button type="button" class="tab" data-tab="prompt" role="tab">Prompt efficiency</button>
