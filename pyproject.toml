@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-hive"
+version = "0.4.0"
+description = "Multilingual, budget-aware agent orchestration for Codex and Claude Code."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "May Sidon" }]
+keywords = ["ai-agents", "codex", "claude-code", "orchestration", "token-optimization"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.optional-dependencies]
+openai-count = ["tiktoken>=0.7"]
+
+[project.scripts]
+hive = "agent_hive.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/mckova/agent-hive"
+Repository = "https://github.com/mckova/agent-hive.git"
+Issues = "https://github.com/mckova/agent-hive/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,9 +1,9 @@
 {
   "name": "agent-hive",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Compile multilingual project goals into a budget-aware, guarded hive of specialized Codex workers.",
   "author": {
-    "name": "mckova"
+    "name": "May Sidon"
   },
   "license": "MIT",
   "keywords": ["agents", "budget", "multilingual", "orchestration", "tokens"],
@@ -12,7 +12,7 @@
     "displayName": "Agent Hive",
     "shortDescription": "Budget-aware multilingual agent orchestration",
     "longDescription": "Turn a goal in any language into guarded worker cells, protected budgets, resumable execution, scoped memory, telemetry, and compact HIVE/1 payloads.",
-    "developerName": "mckova",
+    "developerName": "May Sidon",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
     "defaultPrompt": [

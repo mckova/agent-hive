@@ -11,7 +11,7 @@ Every model call uses the same configured model and reasoning effort. The oracle
 
 ```powershell
 $env:OPENAI_KEY = "..."
-npm.cmd run benchmark:hive-oracle -- --limit=6
+python .\benchmarks\hive_oracle\benchmark.py --limit=6
 ```
 
 Use `--include=id1,id2` or `--exclude=id1,id2` for explicit development and holdout partitions. Small runs are smoke tests, not statistical proof.

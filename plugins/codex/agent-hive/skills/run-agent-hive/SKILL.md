@@ -12,18 +12,18 @@ Treat the hive as an execution model, not decorative terminology. Keep the missi
 1. Capture the user's goal in its original language. Preserve filenames, identifiers, code, quotations, constraints, and requested output language.
    - Apply swarm admission before creating cells. For an atomic, well-specified change with local acceptance tests, use only `builder -> guard`; omit scout/design because the task already supplies their output. Use the full hive when discovery, external evidence, cross-component coordination, or independent parallel ownership can plausibly repay another model turn. Keeper is optional unless context will be reused across runs.
 2. Create `.hive/mission.json` from the Mission Genome schema in [references/mission-genome.md](references/mission-genome.md). Infer safe defaults; ask only about ambiguity that materially changes the outcome.
-3. Resolve the plugin root as two directories above this file. Run its bundled CLI:
-   - `node <plugin-root>/runtime/bin/hive.mjs validate .hive/mission.json`
-   - `node <plugin-root>/runtime/bin/hive.mjs plan .hive/mission.json --out .hive/plan.json`
-   - `node <plugin-root>/runtime/bin/hive.mjs compare .hive/mission.json --counter heuristic`
-   - `node <plugin-root>/runtime/bin/hive.mjs compile .hive/plan.json --target codex --out-dir .hive/payloads`
+3. Resolve the plugin root as two directories above this file. Use Python 3.11 or newer to run its dependency-free bundled CLI:
+   - `python <plugin-root>/runtime/hive.py validate .hive/mission.json`
+   - `python <plugin-root>/runtime/hive.py plan .hive/mission.json --out .hive/plan.json`
+   - `python <plugin-root>/runtime/hive.py compare .hive/mission.json --counter heuristic`
+   - `python <plugin-root>/runtime/hive.py compile .hive/plan.json --target codex --out-dir .hive/payloads`
 4. For planning-only requests, present the plan and stop. Do not spawn workers. `hive run ... --target codex --dry-run` is also safe for a terminal preview because it makes no model call. Exit `2` with `gate_attention_required` is an expected safe preview when a human-gated action exists.
 5. Choose one execution mode:
    - **Host-native (default inside an active Codex task):** read [references/worker-roles.md](references/worker-roles.md), run `next`, and spawn only the returned cells. Give each worker its matching `.hive/payloads/<cell>.hive`, exact artifact ownership, and return fields. This avoids a nested Codex session.
-   - **Autonomous CLI (only when the user explicitly requests it):** run `node <plugin-root>/runtime/bin/hive.mjs run .hive/mission.json --target codex --state-dir .hive --workspace .`. The local `codex` CLI must already be installed and authenticated. Resume a stopped run with `run --resume --state-dir .hive --workspace .`; the saved target is reused.
+   - **Autonomous CLI (only when the user explicitly requests it):** run `python <plugin-root>/runtime/hive.py run .hive/mission.json --target codex --state-dir .hive --workspace .`. The local `codex` CLI must already be installed and authenticated. Resume a stopped run with `run --resume --state-dir .hive --workspace .`; the saved target is reused.
    - Before host-native dispatch, declare each cell's `actions` and workspace-relative `paths`, then run `gate --plan .hive/plan.json --action <action> --path <path>` for each scope. When using another state directory, always pass its exact `plan.json` with `--plan`. A denied gate is final until the Mission Genome changes. A `human_required` result must be shown to the user; never add `--human-approved` or `--approve` without an actual approval.
 6. Map `economy`, `balanced`, and `frontier` to models the user allows. Prefer the cheapest tier that meets the cell's assigned tier. Do not silently cross providers or paid plans.
-7. Wait for dependencies before starting downstream cells. In host-native mode, parallelize only independent cells whose write scopes do not overlap. The v0.3 autonomous runner is sequential.
+7. Wait for dependencies before starting downstream cells. In host-native mode, parallelize only independent cells whose write scopes do not overlap. The v0.4 autonomous runner is sequential.
 8. In host-native mode, after each result run `record <cell> --status <status> --used <cumulative-amount>` with attempts, artifacts, evidence, blockers, reusable context, and host-reported token/latency metrics. Run `status`, surface every alert, then `next`; run `rebalance --out .hive/plan.json` after overruns, failures, or scope changes. Autonomous mode checkpoints those fields after every transition and stops if budget telemetry is missing.
 9. Require guard evidence before declaring mission completion. Return the outcome in the user's requested language.
 

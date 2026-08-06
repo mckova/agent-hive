@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.4.0 - 2026-08-06
+
+- Migrated the CLI, deterministic core, provider drivers, tests, benchmarks, and bundled plugin runtimes from JavaScript to Python 3.11+.
+- Added a standard-library-only Python package and `hive` console entry point while retaining optional `tiktoken` support for exact OpenAI text counts.
+- Expanded CI across Python 3.11, 3.12, and 3.13 on Windows and Ubuntu.
+
 ## 0.3.0 - 2026-08-05
 
 - Added `hive run` for checkpointed, resumable execution through local Codex and Claude Code CLIs.

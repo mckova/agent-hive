@@ -12,13 +12,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node: [20, 22]
+        python: ["3.11", "3.12", "3.13"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: ${{ matrix.node }}
-      - run: npm test
-      - run: npm run benchmark
-      - run: npm run validate
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -t . -v
+      - run: python scripts/benchmark.py
+      - run: python scripts/sync_plugin_runtime.py
+      - run: python scripts/validate_repo.py
