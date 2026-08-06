@@ -184,4 +184,14 @@ npm.cmd run validate
 
 Read the [architecture](docs/architecture.md), [security and observability](docs/security-and-observability.md), [memory model](docs/memory.md), [HIVE/1 protocol](docs/hive-protocol.md), [Prompt IR decision](docs/decisions/0001-hive-over-prompt-ir.md), and [limitations](docs/limitations.md).
 
-MIT licensed. Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+## License
+
+Agent Hive is MIT licensed. The copyright and permission notices must be included in all copies or substantial portions of the software. Copy-ready copyright notice:
+
+```text
+Copyright (c) 2026 May Sidon | Agent Hive | https://github.com/mckova/agent-hive
+```
+
+For convenience, copy the root [NOTICE](NOTICE) file into projects that incorporate Agent Hive. See [LICENSE](LICENSE) for the complete terms.
+
+Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
