@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "private": true,
   "description": "A multilingual, budget-aware guarded runner for Codex and Claude Code agent hives.",
-  "author": "mckova",
+  "author": "May Sidon",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mckova/agent-hive.git"
@@ -27,5 +27,5 @@
   "engines": {
     "node": ">=20"
   },
-  "license": "MIT"
+  "license": "SEE LICENSE IN LICENSE"
 }

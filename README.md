@@ -184,4 +184,14 @@ npm.cmd run validate
 
 Read the [architecture](docs/architecture.md), [security and observability](docs/security-and-observability.md), [memory model](docs/memory.md), [HIVE/1 protocol](docs/hive-protocol.md), [Prompt IR decision](docs/decisions/0001-hive-over-prompt-ir.md), and [limitations](docs/limitations.md).
 
-MIT licensed. Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+## License and required attribution
+
+Agent Hive may be used, modified, distributed, and sold for private, public, non-commercial, or commercial purposes. Every use of the code, in whole or in part, must credit the project, copyright holder, and repository. Copy this line exactly:
+
+```text
+Agent Hive — Copyright (c) 2026 May Sidon — https://github.com/mckova/agent-hive
+```
+
+You can satisfy the requirement by copying the root [NOTICE](NOTICE) file into your project. For public or commercial products and services, place the notice in an accessible location such as the README, documentation, credits, About page, or legal notices. See [LICENSE](LICENSE) for the complete terms.
+
+Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
