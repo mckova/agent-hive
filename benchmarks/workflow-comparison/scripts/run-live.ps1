@@ -66,8 +66,8 @@ function Invoke-CodexPhase {
 
 $common = @"
 עבדי רק בתיקייה הנוכחית. אל תקראי תיקיות אב או sibling ואל תחפשי grader נסתר.
-קראי את TASK.md, ממשי את כל הדרישות ב-src/rate-limiter.mjs, והריצי npm test.
-אל תשני package.json או checks/. בדקי את העבודה לפני סיום ודווחי בקצרה על הראיות.
+קראי את TASK.md, ממשי את כל הדרישות ב-src/rate_limiter.py, והריצי python -m unittest discover -s checks -v.
+אל תשני checks/. בדקי את העבודה לפני סיום ודווחי בקצרה על הראיות.
 "@
 
 if ($selectedArms -contains "normal") {
@@ -95,20 +95,20 @@ if ($selectedArms -contains "ralph") {
 $loopMaker = @"
 עבדי רק בתיקייה הנוכחית ואל תקראי תיקיות אב או sibling.
 קראי TASK.md, LOOP.md, STATE.md, loop-budget.md, loop-constraints.md ואת .agents/skills/minimal-fix/SKILL.md.
-פעלי כ-maker: ממשי את המשימה ב-src/rate-limiter.mjs בלבד, הריצי npm test, ועדכני STATE.md ל-awaiting_verification. אל תסמני את עבודתך כמאושרת.
+פעלי כ-maker: ממשי את המשימה ב-src/rate_limiter.py בלבד, הריצי python -m unittest discover -s checks -v, ועדכני STATE.md ל-awaiting_verification. אל תסמני את עבודתך כמאושרת.
 "@
 if ($selectedArms -contains "loop-engineering") {
 Invoke-CodexPhase -Arm "loop-engineering" -Phase "maker" -Prompt $loopMaker | Out-Null
 $loopVerifier = @"
 עבדי רק בתיקייה הנוכחית ואל תקראי תיקיות אב או sibling.
 קראי TASK.md, LOOP.md, STATE.md, loop-constraints.md ואת .agents/skills/loop-verifier/SKILL.md.
-פעלי כ-checker עצמאי. בדקי את הקוד בפועל, הריצי npm test, והשווי כל דרישה. אל תשני קוד. החזירי Verdict לפי הסקיל.
+פעלי כ-checker עצמאי. בדקי את הקוד בפועל, הריצי python -m unittest discover -s checks -v, והשווי כל דרישה. אל תשני קוד. החזירי Verdict לפי הסקיל.
 "@
 $loopVerdict = Invoke-CodexPhase -Arm "loop-engineering" -Phase "verifier" -Prompt $loopVerifier
 if ($loopVerdict.finalMessage -match "(?im)^## Verdict:\s*REJECT\b") {
   $loopRepair = @"
 עבדי רק בתיקייה הנוכחית. קראי TASK.md, loop-constraints.md, .agents/skills/minimal-fix/SKILL.md ואת .bench/verifier.final.md.
-זהו repair attempt אחרון. תקני רק את הליקויים הספציפיים, הריצי npm test ועדכני STATE.md. אל תקראי תיקיות אב או sibling.
+זהו repair attempt אחרון. תקני רק את הליקויים הספציפיים, הריצי python -m unittest discover -s checks -v ועדכני STATE.md. אל תקראי תיקיות אב או sibling.
 "@
   Invoke-CodexPhase -Arm "loop-engineering" -Phase "repair" -Prompt $loopRepair | Out-Null
   Invoke-CodexPhase -Arm "loop-engineering" -Phase "verifier-2" -Prompt $loopVerifier | Out-Null
@@ -123,33 +123,33 @@ if ($selectedArms -contains "agent-hive") {
 if (Test-Path -LiteralPath (Join-Path $RunRoot "agent-hive\.hive\payloads\survey.hive")) {
 $survey = Invoke-CodexPhase -Arm "agent-hive" -Phase "survey" -Prompt $hiveSurvey
 $surveyUsed = $survey.inputTokens + $survey.outputTokens + $survey.reasoningOutputTokens
-& node "$PSScriptRoot\..\..\..\bin\hive.mjs" record survey --status done --used $surveyUsed --artifact .hive/survey.md --evidence "scout completed" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
+& python "$PSScriptRoot\..\..\..\hive.py" record survey --status done --used $surveyUsed --artifact .hive/survey.md --evidence "scout completed" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
 }
 
 $hiveBuild = @"
 עבדי רק בתיקייה הנוכחית. קראי TASK.md, .hive/payloads/build.hive ו-.hive/survey.md.
-בצעי builder cell: ממשי רק src/rate-limiter.mjs, אל תשני package.json/checks, הריצי npm test והחזירי status/artifacts/evidence/blockers/spent/reusable_context. אל תקראי תיקיות אב או sibling.
+בצעי builder cell: ממשי רק src/rate_limiter.py, אל תשני checks, הריצי python -m unittest discover -s checks -v והחזירי status/artifacts/evidence/blockers/spent/reusable_context. אל תקראי תיקיות אב או sibling.
 "@
 $build = Invoke-CodexPhase -Arm "agent-hive" -Phase "build" -Prompt $hiveBuild
 $buildUsed = $build.inputTokens + $build.outputTokens + $build.reasoningOutputTokens
-& node "$PSScriptRoot\..\..\..\bin\hive.mjs" record build --status done --used $buildUsed --artifact src/rate-limiter.mjs --evidence "public tests" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
+& python "$PSScriptRoot\..\..\..\hive.py" record build --status done --used $buildUsed --artifact src/rate_limiter.py --evidence "public tests" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
 
 $hiveGuard = @"
 עבדי רק בתיקייה הנוכחית. קראי TASK.md, .hive/payloads/verify.hive, .hive/survey.md ואת הקוד בפועל.
-פעלי כ-guard עצמאי read-only. הריצי npm test, אמתִי כל דרישה, security ו-scope. החזירי status: done רק אם הכול תקין; אחרת status: partial עם blockers מדויקים. אל תשני קוד ואל תקראי תיקיות אב או sibling.
+פעלי כ-guard עצמאי read-only. הריצי python -m unittest discover -s checks -v, אמתִי כל דרישה, security ו-scope. החזירי status: done רק אם הכול תקין; אחרת status: partial עם blockers מדויקים. אל תשני קוד ואל תקראי תיקיות אב או sibling.
 "@
 $guard = Invoke-CodexPhase -Arm "agent-hive" -Phase "guard" -Prompt $hiveGuard
 if ($guard.finalMessage -notmatch "status:\s*done") {
   $hiveRepair = @"
 עבדי רק בתיקייה הנוכחית. קראי TASK.md, .hive/payloads/build.hive ואת .bench/guard.final.md.
-בצעי repair ממוקד של blockers בלבד ב-src/rate-limiter.mjs, הריצי npm test והחזירי חוזה HIVE/1. אל תקראי תיקיות אב או sibling.
+בצעי repair ממוקד של blockers בלבד ב-src/rate_limiter.py, הריצי python -m unittest discover -s checks -v והחזירי חוזה HIVE/1. אל תקראי תיקיות אב או sibling.
 "@
   Invoke-CodexPhase -Arm "agent-hive" -Phase "repair" -Prompt $hiveRepair | Out-Null
   $guard = Invoke-CodexPhase -Arm "agent-hive" -Phase "guard-2" -Prompt $hiveGuard
 }
 $guardUsed = $guard.inputTokens + $guard.outputTokens + $guard.reasoningOutputTokens
 $guardStatus = if ($guard.finalMessage -match "status:\s*done") { "done" } else { "partial" }
-& node "$PSScriptRoot\..\..\..\bin\hive.mjs" record verify --status $guardStatus --used $guardUsed --evidence "guard completed" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
+& python "$PSScriptRoot\..\..\..\hive.py" record verify --status $guardStatus --used $guardUsed --evidence "guard completed" --plan "$RunRoot\agent-hive\.hive\plan.json" --usage "$RunRoot\agent-hive\.hive\usage.json" | Out-Null
 }
 
 $summaries = $allRuns | Group-Object arm | ForEach-Object {

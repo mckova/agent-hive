@@ -34,13 +34,13 @@ flowchart LR
 
 ## Quick start
 
-Requires Node.js 20 or newer. The core has no npm runtime dependencies.
+Requires Python 3.11 or newer. The core has no required third-party runtime dependencies.
 
 ```powershell
-npm.cmd test
-node .\bin\hive.mjs run .\examples\missions\japanese-release.json --target codex --dry-run
-node .\bin\hive.mjs run .\examples\missions\japanese-release.json --target codex --workspace . --state-dir .\.hive
-node .\bin\hive.mjs run --resume --state-dir .\.hive --workspace .
+python -m unittest discover -s tests -t . -v
+python .\hive.py run .\examples\missions\japanese-release.json --target codex --dry-run
+python .\hive.py run .\examples\missions\japanese-release.json --target codex --workspace . --state-dir .\.hive
+python .\hive.py run --resume --state-dir .\.hive --workspace .
 ```
 
 `--dry-run` plans, compiles payloads, and evaluates gates without calling a model. A real run invokes the already-installed and authenticated `codex` or `claude` executable, keeps provider permission controls enabled, writes checkpoints under `.hive/`, and stops at the budget, attempt, approval, or telemetry boundary. It does not enable network access or approve destructive actions for itself. Autonomous completion requires a required `guard` cell and evidence from every completed cell.
@@ -50,37 +50,37 @@ Exit code `0` means completed or a clean dry run, `1` means invalid input/runtim
 The lower-level lifecycle remains available for host-native workers and debugging:
 
 ```powershell
-node .\bin\hive.mjs plan .\examples\missions\japanese-release.json --out .\.hive\plan.json
-node .\bin\hive.mjs compare .\examples\missions\japanese-release.json --counter heuristic
-node .\bin\hive.mjs compile .\.hive\plan.json --target codex --out-dir .\.hive\payloads
-node .\bin\hive.mjs gate --plan .\.hive\plan.json --action write --path src
-node .\bin\hive.mjs next .\.hive\plan.json
+python .\hive.py plan .\examples\missions\japanese-release.json --out .\.hive\plan.json
+python .\hive.py compare .\examples\missions\japanese-release.json --counter heuristic
+python .\hive.py compile .\.hive\plan.json --target codex --out-dir .\.hive\payloads
+python .\hive.py gate --plan .\.hive\plan.json --action write --path src
+python .\hive.py next .\.hive\plan.json
 ```
 
 After a worker returns, record actual usage and unlock downstream cells:
 
 ```powershell
-node .\bin\hive.mjs record build --status done --used 4200 --attempts 1 `
-  --artifact src/result.mjs --evidence "focused tests pass" `
+python .\hive.py record build --status done --used 4200 --attempts 1 `
+  --artifact src/result.py --evidence "focused tests pass" `
   --input-tokens 3000 --cached-input-tokens 1800 --output-tokens 700 `
   --reasoning-tokens 500 --latency-ms 42000 --model-calls 1
-node .\bin\hive.mjs status .\.hive\plan.json
-node .\bin\hive.mjs rebalance .\.hive\plan.json --out .\.hive\plan.rebalanced.json
+python .\hive.py status .\.hive\plan.json
+python .\hive.py rebalance .\.hive\plan.json --out .\.hive\plan.rebalanced.json
 ```
 
 The reserve opens only through an explicit decision:
 
 ```powershell
-node .\bin\hive.mjs rebalance .\.hive\plan.json --release-reserve
+python .\hive.py rebalance .\.hive\plan.json --release-reserve
 ```
 
 Local memory is optional. New records are untrusted unless explicitly verified:
 
 ```powershell
-node .\bin\hive.mjs memory put --scope mission --namespace release-42 `
+python .\hive.py memory put --scope mission --namespace release-42 `
   --kind decision --content "Use the existing migration path" --trusted
-node .\bin\hive.mjs memory query --scope mission --namespace release-42 --trusted-only --limit 5
-node .\bin\hive.mjs memory decay
+python .\hive.py memory query --scope mission --namespace release-42 --trusted-only --limit 5
+python .\hive.py memory decay
 ```
 
 ## Mission Genome
@@ -122,14 +122,14 @@ Leave `cells` empty for the default `survey -> design -> build -> verify -> dist
 
 ```powershell
 # Clearly labeled offline planning heuristic
-node .\bin\hive.mjs compare mission.json --counter heuristic
+python .\hive.py compare mission.json --counter heuristic
 
 # Exact text encoding through optional Python tiktoken
 python -m pip install tiktoken
-node .\bin\hive.mjs compare mission.json --counter openai --model YOUR_MODEL
+python .\hive.py compare mission.json --counter openai --model YOUR_MODEL
 
 # Anthropic message-count endpoint; requires ANTHROPIC_API_KEY
-node .\bin\hive.mjs compare mission.json --counter anthropic --model YOUR_MODEL
+python .\hive.py compare mission.json --counter anthropic --model YOUR_MODEL
 ```
 
 Agent Hive does not assume English is always cheapest. Tokenization varies by provider, model, script, and prompt structure. Every row reports `heuristic`, `exact-text`, or `provider-estimate`; `auto` falls back visibly instead of pretending an estimate is exact.
@@ -168,7 +168,7 @@ Hive intentionally collapses to `builder -> guard` for a small, fully specified 
 [`benchmarks/hive-oracle`](benchmarks/hive-oracle) tests multilingual retrieval and compact answering. [`benchmarks/workflow-comparison`](benchmarks/workflow-comparison) compares a normal prompt, Caveman, Ralph Loop, Loop Engineering, and Agent Hive on the same coding fixture with hidden tests and provider-reported token fields.
 
 ```powershell
-npm.cmd run benchmark:hive-oracle
+python .\benchmarks\hive_oracle\benchmark.py --limit=6
 ```
 
 The heuristic counter is not proof of provider savings; the live workflow comparison keeps its single-run limitations visible.
@@ -176,10 +176,10 @@ The heuristic counter is not proof of provider savings; the live workflow compar
 ## Development and documentation
 
 ```powershell
-npm.cmd test
-npm.cmd run benchmark
-npm.cmd run sync:plugins
-npm.cmd run validate
+python -m unittest discover -s tests -t . -v
+python .\scripts\benchmark.py
+python .\scripts\sync_plugin_runtime.py
+python .\scripts\validate_repo.py
 ```
 
 Read the [architecture](docs/architecture.md), [security and observability](docs/security-and-observability.md), [memory model](docs/memory.md), [HIVE/1 protocol](docs/hive-protocol.md), [Prompt IR decision](docs/decisions/0001-hive-over-prompt-ir.md), and [limitations](docs/limitations.md).

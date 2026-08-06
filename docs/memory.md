@@ -23,13 +23,13 @@ These are deterministic filters, not semantic retrieval. The MVP does not embed 
 ## Examples
 
 ```powershell
-node .\bin\hive.mjs memory put --scope team --namespace mission-42 `
+python .\hive.py memory put --scope team --namespace mission-42 `
   --kind decision --content "Migration uses the existing adapter" --trusted `
   --visibility builder --visibility guard
 
-node .\bin\hive.mjs memory query --scope team --namespace mission-42 `
+python .\hive.py memory query --scope team --namespace mission-42 `
   --role guard --trusted-only --minimum-score 0.6 --limit 5
 
-node .\bin\hive.mjs memory decay
-node .\bin\hive.mjs memory delete --scope mission --namespace mission-42
+python .\hive.py memory decay
+python .\hive.py memory delete --scope mission --namespace mission-42
 ```

@@ -2,6 +2,8 @@
 
 Date: 2026-08-05. Model: GPT-5.5, medium reasoning. Host: Codex CLI 0.130.0.
 
+This is a historical v0.3 result produced with the original JavaScript fixture. Agent Hive v0.4 and the active reproducibility fixture are Python 3.11+; the recorded measurements below are preserved rather than relabeled.
+
 ## Bottom line
 
 All five primary methods produced a fully correct artifact: public tests passed, all 12 hidden cases passed, all six hidden security/resource cases passed, and every implementation met the scope checks. On this small, well-specified task, more orchestration bought no additional artifact quality.
