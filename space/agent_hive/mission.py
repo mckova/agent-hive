@@ -127,7 +127,7 @@ def decompose_mission(
                 "Keep only verified decisions, reusable context, artifact paths, and unresolved risks from this run.",
                 "Exclude secrets, raw prompt repetition, stale assumptions, and unverified claims.",
                 "Return a compact handoff that reduces context cost for the next hive run.",
-            ], ["read", "write"],
+            ], ["read"],
         ),
     ]
 
@@ -200,6 +200,8 @@ def validate_mission(value: Any) -> list[str]:
                 errors.append(f"models.{tier}.{target} must be a non-empty string.")
 
     raw_cells = value.get("cells")
+    if "cells" in value and not isinstance(raw_cells, list):
+        errors.append("cells must be an array.")
     goal = mission.get("goal") if isinstance(mission, dict) and isinstance(mission.get("goal"), str) else "the mission"
     cells = raw_cells if isinstance(raw_cells, list) and raw_cells else decompose_mission(
         goal,

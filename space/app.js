@@ -162,7 +162,7 @@ function renderResult(result, shouldScroll = true) {
   document.querySelector("#queen-goal").textContent = result.queen.goal;
   document.querySelector("#queen-rule").textContent = result.queen.rule;
   renderConstraintList("queen-must", result.queen.must, "No explicit must constraints—Scout will identify implied requirements.");
-  renderConstraintList("queen-avoid", result.queen.avoid, "No explicit avoid constraints—Guard will gate risky actions.");
+  renderConstraintList("queen-avoid", result.queen.avoid, "No explicit avoid constraints. Define restrictions and real host permissions before execution.");
   renderConstraintList("queen-done", result.queen.doneWhen, "No explicit criteria—Architect must define verifiable acceptance evidence.");
   renderAssignments(result.assignments);
   document.querySelector("#metric-cells").textContent = metrics.cells;

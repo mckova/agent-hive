@@ -1,6 +1,6 @@
 {
   "name": "agent-hive",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Compile multilingual project goals into a budget-aware, guarded hive of specialized Codex workers.",
   "author": {
     "name": "May Sidon"

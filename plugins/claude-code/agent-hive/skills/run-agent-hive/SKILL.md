@@ -24,14 +24,14 @@ Treat the hive as an execution model. Keep the mission immutable, accounting det
    - Before host-native dispatch, declare each cell's `actions` and workspace-relative `paths`, then run `gate --plan .hive/plan.json --action <action> --path <path>` for each scope. When using another state directory, always pass its exact `plan.json` with `--plan`. A denied gate is final until the Mission Genome changes. A `human_required` result must be shown to the user; never add `--human-approved` or `--approve` without an actual approval.
 6. Respect the model tier in each payload. If the Mission Genome names a Claude model that differs from the bundled host-native tier mapping, use autonomous CLI mode or stop for configuration; never claim the requested model ran when it did not. Do not silently cross providers, plans, or user cost boundaries.
 7. Wait for dependencies. In host-native mode, parallelize only independent cells whose write scopes do not overlap. The v0.4 autonomous runner is sequential.
-8. In host-native mode, after each result run `record <cell> --status <status> --used <cumulative-amount>` with attempts, artifacts, evidence, blockers, reusable context, and host-reported token/latency metrics. Run `status`, surface every alert, then `next`; run `rebalance --out .hive/plan.json` after overruns, failures, or scope changes. Autonomous mode checkpoints those fields after every transition and stops if budget telemetry is missing.
-9. Require guard evidence before declaring mission completion. Respond in the requested language.
+8. In host-native mode, record confirmed cumulative usage, attempts, artifacts, evidence, blockers, reusable context, and host-reported metrics after each result. Token totals are input plus output; reasoning is a diagnostic subset of output, not an extra charge. Run `status`, surface alerts, then `next`; use an explicit `rebalance --out .hive/plan.json` when needed. Autonomous mode checkpoints state and usage. Missing/incomplete telemetry or an interrupted invocation blocks dispatch: inspect its outcome and actual provider usage, then use `reconcile` with supporting evidence. Never invent zero usage or blindly retry an uncertain action.
+9. Require downstream, read-only guard coverage for mutating work and verify the reported evidence before declaring completion. The default keeper returns reusable context without project writes. Respond in the requested language.
 
 ## Context rules
 
 - Pass the Mission Genome once, then only the cell payload and relevant dependency artifacts.
 - Return summaries and evidence, not raw logs.
-- Never translate code, paths, identifiers, commands, or literal user wording.
+- Never translate code, paths, identifiers, commands, or literal user wording. The current runtime trims surrounding mission-string whitespace and normalizes whitespace in generated role text; do not promise arbitrary byte preservation.
 - Optimize expected total completion cost, not prompt length alone.
 - Protect the reserve for verification and recovery.
 - Drop optional cells before weakening required success criteria.
@@ -44,6 +44,6 @@ Treat the hive as an execution model. Keep the mission immutable, accounting det
 - Store only distilled, reusable facts with `memory put`; default records are untrusted. Use `--trusted` only for user-approved or independently verified facts.
 - Use `mission` or `session` scope for short-lived context, `team` for shared cell evidence, and `agent` plus role visibility for private worker memory.
 - Query with `--trusted-only`, a role, a score threshold, and a small limit when memory will influence a decision. Content above the default sensitivity threshold requires an explicit `--include-sensitive` decision.
-- Run `memory decay` between long runs and delete mission/session scopes when the work ends. Verified successful reuse is the only reason to reinforce a memory.
+- Queries exclude TTL-expired records. Run `memory decay` for storage cleanup between long runs and delete mission/session scopes when the work ends. Verified successful reuse is the only reason to reinforce a memory.
 
 Require worker results with: `status` (`done`, `partial`, `blocked`, or `failed`), `artifacts`, `evidence`, `blockers`, `spent`, and `reusable_context`.

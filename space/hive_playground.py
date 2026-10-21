@@ -40,7 +40,7 @@ ROLE_GUIDE = {
     },
     "keeper": {
         "name": "Keeper bee",
-        "purpose": "Keeps only verified reusable context so the next run starts smaller and does not inherit stale memory.",
+        "purpose": "Returns a compact reusable-context summary without writing project artifacts after verification.",
         "deliverable": "Compact handoff: verified decisions, artifact paths, reusable context, and unresolved risks—with no secrets.",
     },
 }
@@ -129,7 +129,7 @@ def build_playground_result(
         f"**{len(plan['cells'])} cells** across **{len(plan['waves'])} waves** · "
         f"**{plan['budget']['allocated']:,}** spendable tokens · "
         f"**{plan['budget']['reserve']:,}** protected reserve · "
-        f"best lossless representation: **{best['name']}** "
+        f"lowest-count representation retaining normalized literals: **{best['name']}** "
         f"({best['tokens']:,} heuristic tokens)\n\n"
         "This public demo performs deterministic planning only. It does not call a model, "
         "run provider CLIs, retain prompts, or execute tools."
@@ -141,7 +141,7 @@ def build_playground_result(
             "must": plan["mission"]["must"],
             "avoid": plan["mission"]["avoid"],
             "doneWhen": plan["mission"]["doneWhen"],
-            "rule": "The queen owns intent and constraints. Workers receive scoped contracts and cannot redefine the mission.",
+            "rule": "The mission supplies intent and constraints to a fixed role template. This preview executes no workers; normalization trims surrounding whitespace.",
         },
         "assignments": assignments,
         "metrics": {

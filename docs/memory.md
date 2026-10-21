@@ -1,6 +1,6 @@
 # Memory and context management
 
-Agent Hive keeps memory outside the conversation so a fresh worker receives only relevant context. The local store defaults to `.hive/memory.json`.
+Agent Hive provides optional local memory outside the conversation. The store defaults to `.hive/memory.json`. The caller queries and passes selected facts to workers; terminal worker prompts do not automatically recall this store. A keeper's reusable-context return is recorded with its result, not automatically promoted to trusted memory.
 
 ## Memory shapes
 
@@ -16,7 +16,7 @@ Agent Hive keeps memory outside the conversation so a fresh worker receives only
 
 ## Retention and poisoning controls
 
-Retention combines recency, confidence, relevance, source quality, verified utility, reuse, and sensitivity. Untrusted memories start with lower source quality and utility. Only verified successful reuse can reinforce a record. TTL and half-life decay cool, archive, or delete stale records. Sensitive records above `0.5` are excluded from ordinary queries.
+Retention combines recency, confidence, relevance, source quality, verified utility, reuse, and sensitivity. Untrusted memories start with lower source quality and utility. Only verified successful reuse can reinforce a record. Queries exclude TTL-expired records; `memory decay` removes expired records from storage and cools, archives, or deletes records according to retention score. Sensitive records above `0.5` are excluded from ordinary queries.
 
 These are deterministic filters, not semantic retrieval. The MVP does not embed content, infer entities, encrypt the file, or authenticate namespaces. A multi-user product requires tenant-isolated encrypted storage and server-side authorization.
 

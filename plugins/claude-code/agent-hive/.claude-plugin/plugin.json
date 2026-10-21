@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "agent-hive",
   "displayName": "Agent Hive",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Compile multilingual project goals into a budget-aware, guarded hive of specialized Claude Code workers.",
   "author": {
     "name": "May Sidon"

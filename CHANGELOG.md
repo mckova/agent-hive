@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.4.1 - 2026-10-21
+
+- Reject malformed `cells` values instead of silently replacing them with the default graph.
+- Require downstream, read-only guard coverage for mutating work; make the optional default keeper read-only.
+- Stop dispatch when a failed or interrupted invocation has unresolved usage. Add explicit outcome/usage reconciliation before retry or resume.
+- Require complete input/output token totals for token accounting; keep reasoning as a diagnostic subset instead of counting it twice. Aggregate provider-reported turns and reject incomplete telemetry.
+- Preserve cumulative cell spending when rebalancing and write checkpoint files atomically.
+- Pass bounded, untrusted dependency summaries to downstream workers and invalidate completed descendants when upstream ledger outcomes change, retaining their spend and attempts.
+- Exclude TTL-expired memory from queries, while retaining decay as storage cleanup.
+- Align README, architecture, limitations, plugin guidance, and playground wording with the implemented Alpha scope: sequential CLI execution, no model calls in dry-run, between-call budget checks, and a planning-only HF demo.
+- Preserve historical benchmark data and dates without extending its claims to the current release.
+
+Compatibility: incomplete telemetry and invalid verification graphs now stop execution rather than proceeding with assumed usage or unchecked mutating work. Inspect interrupted outcomes and confirm cumulative usage before using `reconcile`; it is not authorization to repeat an action.
+
 ## 0.4.0 - 2026-08-06
 
 - Migrated the CLI, deterministic core, provider drivers, tests, benchmarks, and bundled plugin runtimes from JavaScript to Python 3.11+.

@@ -7,39 +7,41 @@ sdk: static
 app_file: index.html
 pinned: false
 license: mit
-short_description: Guard agent workflows for Codex and Claude Code.
+short_description: Preview agent plans for Codex and Claude Code.
 ---
 
 # Agent Hive Playground
 
-Agent Hive turns one central prompt into a controlled team of specialized coding agents. The **Queen** keeps the original goal and constraints immutable; every other bee receives a smaller, role-specific worker contract.
+Agent Hive is an Alpha Python orchestration toolkit with Codex and Claude Code integrations. This Space previews its deterministic planner: a **Queen** mission contract, six role-specific cells, model tiers, budget allocations, and HIVE/1 prompt payloads.
 
-## What the live demo proves
+## What the demo shows
 
-Enter a goal in any language—or use the result that loads automatically. The Space shows the complete transformation:
+Enter a goal in any language or edit the loaded example. The planner populates a fixed six-role template with that goal and its constraints:
 
-1. **Queen contract** — the exact goal, must-have constraints, forbidden outcomes, and verifiable completion criteria.
-2. **Worker decomposition** — a concrete assignment, instructions, required return value, dependency wave, model tier, and token ceiling for every bee.
-3. **Execution route** — which cells can run in parallel and which must wait for verified upstream evidence.
-4. **Copy-ready HIVE/1 contracts** — the exact compact payload that Codex, Claude Code, or another worker receives.
-5. **Budget and guardrails** — protected reserve, per-cell allocations, denied network/path actions, human gates, and retry limits.
+1. **Mission contract** - goal, requirements, forbidden outcomes, and completion criteria.
+2. **Role prompts** - proposed tasks, instructions, expected results, and model tiers.
+3. **Dependency waves** - which cells are independent and which depend on earlier cells.
+4. **HIVE/1 previews** - copyable worker payloads to review before execution.
+5. **Budget and policy** - reserve, per-cell allocations, declared paths/actions, approval rules, and attempt limits.
 
-| Hive role | What it receives from the queen | What it must return |
+| Hive role | Intended responsibility | Expected result in a real run |
 |---|---|---|
-| Scout | Mission and hard constraints | Requirement, unknown, and risk map |
-| Forager | Mission and search boundary | Cited evidence pack with relevant project assets |
-| Architect | Scout map + Forager evidence | Dependency-aware implementation route and acceptance matrix |
-| Builder | Approved route | Focused artifact/change set with checks and actual usage |
-| Guard | Built result + Queen criteria | Independent pass/fail evidence matrix |
-| Keeper | Verified run only | Compact reusable context without secrets or stale claims |
+| Scout | Map requirements and unknowns | Requirement and risk map |
+| Forager | Gather relevant evidence | Cited project assets and references |
+| Architect | Plan implementation | Route and acceptance criteria |
+| Builder | Produce the requested artifact | Changes and focused checks |
+| Guard | Review the implementation | Pass/fail evidence and blockers |
+| Keeper | Summarize verified context | Compact reusable facts |
 
-Scout and Forager can work in parallel. Architect waits for both; Builder waits for Architect; Guard can block completion; Keeper stores only verified reusable context.
+Scout and Forager share the first planned wave. A host-native workflow can dispatch independent cells concurrently; the terminal runner executes them sequentially. The demo does neither. In a real workflow, dependency artifacts must be persisted in the workspace or passed by the host.
 
 ## What happens when you press Decompose
 
-The Python planner derives mission-specific worker tasks from your prompt, assigns capability tiers by complexity and risk, distributes only the spendable token budget, protects the reserve, orders dependency waves, and generates the worker contracts. It does **not** pretend that the tasks have already been executed.
+The Python planner creates role prompts, assigns tiers using deterministic scores, allocates the budget excluding its reserve, orders dependency waves, and renders payloads. It does not inspect a repository, discover implementation paths, call a planning model, or execute a worker. Review and specialize the tasks and writable paths before using them in a project. Small tasks can use an explicitly defined builder/guard pair in the full toolkit; the demo shows the six-role template.
 
-This free Static Space runs the deterministic Python planner locally in the browser through Pyodide. JavaScript is limited to loading Python and connecting the browser form to its result. The Space does not call models, execute tools, invoke Codex or Claude Code, retain prompts, or accept API keys.
+This Static Space loads Pyodide from a CDN and runs the Python planner in your browser. It does not send prompts to a model, invoke Codex or Claude Code, execute project tools, persist prompts, or accept API keys. Input normalization trims surrounding whitespace; generated role text also normalizes whitespace.
+
+Token estimates use an offline heuristic, not a provider tokenizer or bill. Allocations are planning values, not hard provider spend ceilings. Tier assignment does not establish model quality or savings. The displayed path/network/approval policy is a declaration for review, not an operating-system sandbox; real execution depends on the host's permissions.
 
 The complete Python package, tests, security model, benchmarks, and installation adapters are maintained in the canonical [Agent Hive GitHub repository](https://github.com/mckova/agent-hive).
 

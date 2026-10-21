@@ -16,6 +16,26 @@
           "status": { "enum": ["pending", "in_progress", "done", "partial", "blocked", "failed"] },
           "used": { "type": "integer", "minimum": 0 },
           "attempts": { "type": "integer", "minimum": 0 },
+          "usageKnown": {
+            "type": "boolean",
+            "description": "False means used is only a confirmed lower bound and dispatch is blocked until explicit reconciliation."
+          },
+          "unknownAttempts": { "type": "integer", "minimum": 0 },
+          "metricsAvailable": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "enum": ["modelCalls", "inputTokens", "cachedInputTokens", "outputTokens", "reasoningTokens", "latencyMs", "costUsd"] },
+            "description": "Metric categories reported completely across cumulative attempts; omitted categories are unavailable, not measured zero."
+          },
+          "reasoningTokensKnown": {
+            "type": "boolean",
+            "description": "Whether reasoning diagnostics are available; reasoning is a subset of output, not additional spend."
+          },
+          "revision": { "type": "integer", "minimum": 0 },
+          "dependencyRevisions": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          },
           "metrics": {
             "type": "object",
             "properties": {

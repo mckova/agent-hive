@@ -24,14 +24,14 @@ Treat the hive as an execution model, not decorative terminology. Keep the missi
    - Before host-native dispatch, declare each cell's `actions` and workspace-relative `paths`, then run `gate --plan .hive/plan.json --action <action> --path <path>` for each scope. When using another state directory, always pass its exact `plan.json` with `--plan`. A denied gate is final until the Mission Genome changes. A `human_required` result must be shown to the user; never add `--human-approved` or `--approve` without an actual approval.
 6. Map `economy`, `balanced`, and `frontier` to models the user allows. Prefer the cheapest tier that meets the cell's assigned tier. Do not silently cross providers or paid plans.
 7. Wait for dependencies before starting downstream cells. In host-native mode, parallelize only independent cells whose write scopes do not overlap. The v0.4 autonomous runner is sequential.
-8. In host-native mode, after each result run `record <cell> --status <status> --used <cumulative-amount>` with attempts, artifacts, evidence, blockers, reusable context, and host-reported token/latency metrics. Run `status`, surface every alert, then `next`; run `rebalance --out .hive/plan.json` after overruns, failures, or scope changes. Autonomous mode checkpoints those fields after every transition and stops if budget telemetry is missing.
-9. Require guard evidence before declaring mission completion. Return the outcome in the user's requested language.
+8. In host-native mode, record confirmed cumulative usage, attempts, artifacts, evidence, blockers, reusable context, and host-reported metrics after each result. Token totals are input plus output; reasoning is a diagnostic subset of output, not an extra charge. Run `status`, surface alerts, then `next`; use an explicit `rebalance --out .hive/plan.json` when needed. Autonomous mode checkpoints state and usage. Missing/incomplete telemetry or an interrupted invocation blocks dispatch: inspect its outcome and actual provider usage, then use `reconcile` with supporting evidence. Never invent zero usage or blindly retry an uncertain action.
+9. Require downstream, read-only guard coverage for mutating work and verify the reported evidence before declaring completion. The default keeper returns reusable context without project writes. Return the outcome in the user's requested language.
 
 ## Context rules
 
 - Pass the Mission Genome once, then only the cell payload and relevant dependency artifacts.
 - Return summaries and evidence, not raw exploration logs.
-- Never translate code, paths, identifiers, commands, or exact user wording marked as literal.
+- Never translate code, paths, identifiers, commands, or exact user wording marked as literal. The current runtime trims surrounding mission-string whitespace and normalizes whitespace in generated role text; do not promise arbitrary byte preservation.
 - Optimize expected total completion cost, not prompt length alone.
 - Do not spend the protected reserve on routine work. Release it only for verification, recovery, or an explicit user decision.
 - Stop or narrow optional cells before weakening a required success criterion.
@@ -44,7 +44,7 @@ Treat the hive as an execution model, not decorative terminology. Keep the missi
 - Store only distilled, reusable facts with `memory put`; default records are untrusted. Use `--trusted` only for user-approved or independently verified facts.
 - Use `mission` or `session` scope for short-lived context, `team` for shared cell evidence, and `agent` plus role visibility for private worker memory.
 - Query with `--trusted-only`, a role, a score threshold, and a small limit when memory will influence a decision. Content above the default sensitivity threshold requires an explicit `--include-sensitive` decision.
-- Run `memory decay` between long runs and delete mission/session scopes when the work ends. Verified successful reuse is the only reason to reinforce a memory.
+- Queries exclude TTL-expired records. Run `memory decay` for storage cleanup between long runs and delete mission/session scopes when the work ends. Verified successful reuse is the only reason to reinforce a memory.
 
 ## Worker return contract
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +18,7 @@ from .protocol import compile_all_payloads
 from .runner import run_hive
 from .token_counter import create_token_counter
 from .usage import next_ready_cells, rebalance_plan, record_cell_usage, summarize_usage
+from .usage import reconcile_cell_usage
 
 BOOLEAN_OPTIONS = {"--release-reserve", "--human-approved", "--trusted", "--trusted-only", "--include-sensitive", "--resume", "--dry-run"}
 
@@ -43,6 +46,7 @@ def run_cli(argv: list[str], io: Any | None = None) -> Any:
                 "compare": _compare_command, "next": _next_command, "record": _record_command,
                 "status": _status_command, "rebalance": _rebalance_command, "explain": _explain_command,
                 "gate": _gate_command, "memory": _memory_command, "run": _run_command,
+                "reconcile": _reconcile_command,
                 "validate": _validate_command}
     if command in {"help", "--help", "-h"}:
         io.log(help_text())
@@ -129,8 +133,11 @@ def _next_command(args: list[str], io: Any) -> list[dict[str, Any]]:
     ready = next_ready_cells(plan, usage)
     if not ready:
         summary = summarize_usage(plan, usage); spendable = summary["total"] - summary["effectiveReserve"]
-        io.log(f"Budget gate closed: used {summary['used']}/{spendable} spendable {plan['budget']['unit']}."
-               if summary["used"] >= spendable else "No pending cell has all dependencies completed.")
+        if not summary["usageKnown"]:
+            io.log("Dispatch paused: usage is unknown; inspect the affected invocation and run hive reconcile before resume.")
+        else:
+            io.log(f"Budget gate closed: used {summary['used']}/{spendable} spendable {plan['budget']['unit']}."
+                   if summary["used"] >= spendable else "No pending cell has all dependencies completed.")
         return []
     rows = [{"id": cell["id"], "role": cell["role"], "tier": cell["modelTier"], "allocation": cell["allocation"],
              "dependencies": ",".join(cell["dependencies"]) or "none"} for cell in ready]
@@ -168,9 +175,16 @@ def _status_command(args: list[str], io: Any) -> dict[str, Any]:
     plan = _read_json(Path(_option(args, "--plan") or (args[0] if args else ".hive/plan.json")).resolve())
     usage = _read_json_if_present(Path(_option(args, "--usage") or ".hive/usage.json").resolve(), {"cells": {}})
     summary = summarize_usage(plan, usage); io.table(summary["rows"])
-    io.log(f"Used {summary['used']}/{summary['total']} {plan['budget']['unit']}; protected reserve {summary['effectiveReserve']}.")
+    qualifier = "at least " if not summary["usageKnown"] else ""
+    io.log(f"Used {qualifier}{summary['used']}/{summary['total']} {plan['budget']['unit']}; protected reserve {summary['effectiveReserve']}.")
+    if not summary["usageKnown"]:
+        io.log("Usage is a known lower bound. Inspect unresolved invocations and run hive reconcile; dispatch is paused.")
     metrics = summary["metrics"]
-    io.log(f"Calls {metrics['modelCalls']}; input {metrics['inputTokens']} ({metrics['cachedInputTokens']} cached); output {metrics['outputTokens']}; reasoning {metrics['reasoningTokens']}; latency {metrics['latencyMs']}ms; cost ${metrics['costUsd']:.4f}.")
+    def reported(field: str) -> str:
+        if field not in summary["metricsAvailable"]:
+            return "unavailable"
+        return f"${metrics[field]:.4f}" if field == "costUsd" else str(metrics[field])
+    io.log(f"Recorded calls {metrics['modelCalls']}; input {reported('inputTokens')} ({reported('cachedInputTokens')} cached); output {reported('outputTokens')}; reasoning subset {reported('reasoningTokens')}; latency {metrics['latencyMs']}ms; cost {reported('costUsd')}.")
     if summary["alerts"]:
         io.table(summary["alerts"])
     if summary["used"] >= summary["total"] - summary["effectiveReserve"]:
@@ -198,6 +212,27 @@ def _explain_command(args: list[str], io: Any) -> str:
         raise ValueError("explain requires a cell id.")
     explanation = explain_cell(_read_json(plan_path), positions[0]); io.log(explanation)
     return explanation
+
+
+def _reconcile_command(args: list[str], io: Any) -> dict[str, Any]:
+    positions = _positional(args)
+    if len(positions) != 1:
+        raise ValueError("reconcile requires one cell id; inspect its outcome and provider usage first.")
+    used, attempts = _optional_integer(args, "--used"), _optional_integer(args, "--attempts")
+    if used is None or attempts is None:
+        raise ValueError("reconcile requires --used and --attempts as confirmed cumulative totals.")
+    directory = Path(_option(args, "--state-dir") or ".hive").resolve()
+    plan = _read_json(directory / "plan.json")
+    updated = reconcile_cell_usage(plan, _read_json(directory / "usage.json"), positions[0],
+        status=_option(args, "--status") or "", used=used, attempts=attempts,
+        evidence=_options(args, "--evidence") or [], artifacts=_options(args, "--artifact"))
+    _write_json(directory / "usage.json", updated)
+    append_audit(_audit_path(args, directory / "usage.json"), {"event": "cell.reconciled", "cell": positions[0],
+        "status": updated["cells"][positions[0]]["status"], "used": used, "attempts": attempts,
+        "evidenceCount": len(updated["cells"][positions[0]]["evidence"])})
+    io.log(f"Reconciled {positions[0]} with confirmed cumulative usage {used} {plan['budget']['unit']} and {attempts} invocation(s).")
+    io.log("No worker was invoked. Inspect status, rebalance if needed, then explicitly run --resume.")
+    return updated
 
 
 def _validate_command(args: list[str], io: Any) -> None:
@@ -270,6 +305,8 @@ def _run_command(args: list[str], io: Any) -> dict[str, Any]:
     plan_path, usage_path, run_path = state_directory / "plan.json", state_directory / "usage.json", state_directory / "run.json"
     audit_file, payload_directory = Path(_option(args, "--audit") or state_directory / "audit.jsonl").resolve(), state_directory / "payloads"
     resume, target = "--resume" in args, requested_target or "codex"
+    if not resume and (usage_path.exists() or run_path.exists()):
+        raise ValueError("State directory already contains a run ledger. Inspect it and use --resume, or choose a fresh --state-dir; existing spend and uncertain outcomes must not be overwritten.")
     state_directory.mkdir(parents=True, exist_ok=True)
     run_state = None
     if resume:
@@ -312,7 +349,10 @@ def _run_command(args: list[str], io: Any) -> dict[str, Any]:
         workspace=str(workspace), model=_option(args, "--model"), timeout_ms=_optional_number(args, "--timeout-ms"),
         approvals=approvals, dry_run="--dry-run" in args, resume_blocked=resume, on_checkpoint=checkpoint)
     io.log(f"Hive run {result['state']['status']}: {result['state']['reason']}.")
-    io.log(f"Used {result['summary']['used']}/{result['summary']['total']} {plan['budget']['unit']}; calls {result['summary']['metrics']['modelCalls']}; latency {result['summary']['metrics']['latencyMs']}ms.")
+    qualifier = "at least " if not result["summary"]["usageKnown"] else ""
+    io.log(f"Used {qualifier}{result['summary']['used']}/{result['summary']['total']} {plan['budget']['unit']}; calls {result['summary']['metrics']['modelCalls']}; latency {result['summary']['metrics']['latencyMs']}ms.")
+    if not result["summary"]["usageKnown"]:
+        io.log("Do not retry blindly. Inspect artifacts and provider usage, then use hive reconcile <cell-id> --state-dir <dir> --status <outcome> --used <cumulative> --attempts <cumulative> --evidence <inspection> before resume.")
     if result["summary"]["alerts"]:
         io.table(result["summary"]["alerts"])
     return result
@@ -410,7 +450,13 @@ def _read_json_if_present(path: Path, fallback: dict[str, Any]) -> dict[str, Any
 
 def _write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    temporary = path.with_name(path.name + ".tmp-" + uuid.uuid4().hex)
+    try:
+        temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def _display(value: Any) -> str:
@@ -431,6 +477,9 @@ Usage:
               [--attempts number] [--artifact path] [--evidence text] [--blocker text] [--context text]
               [--model-calls n] [--input-tokens n] [--cached-input-tokens n]
               [--output-tokens n] [--reasoning-tokens n] [--latency-ms n] [--cost-usd n]
+  hive reconcile <cell-id> --state-dir .hive --status done|pending|blocked|failed
+                 --used confirmed-cumulative --attempts confirmed-cumulative --evidence inspection
+                 [--artifact path]
   hive status [plan.json] [--usage usage.json]
   hive rebalance [plan.json] [--usage usage.json] [--out revised.json] [--release-reserve]
   hive explain <cell-id> [--plan plan.json]

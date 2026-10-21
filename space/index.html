@@ -23,17 +23,17 @@
     <main>
       <section class="hero">
         <p class="eyebrow">MULTILINGUAL · BUDGET-AWARE · GUARDED</p>
-        <h1>Give the queen a mission.<br><span>Build the right hive.</span></h1>
-        <p class="lede">See one central prompt become six concrete worker contracts: who does what, what each bee must return, which model tier it needs, how many tokens it gets, and what must finish first.</p>
+        <h1>Give the queen a mission.<br><span>Preview the plan.</span></h1>
+        <p class="lede">Create a six-role planning template from your goal. Inspect task prompts, model tiers, token allocations, and dependencies. This demo plans the work; it does not run agents.</p>
         <div class="runtime-pill"><span id="runtime-dot"></span><span id="runtime-status">Loading the Python planning engine…</span></div>
       </section>
 
       <section class="proof-strip" aria-label="How Agent Hive works">
-        <article><span>QUEEN</span><strong>Locks the mission</strong><p>Goal, constraints, forbidden outcomes, and proof of completion stay immutable.</p></article>
+        <article><span>QUEEN</span><strong>Records the mission</strong><p>The goal, constraints, forbidden outcomes, and completion criteria define the plan.</p></article>
         <div aria-hidden="true">→</div>
-        <article><span>WORKER CELLS</span><strong>Receive scoped contracts</strong><p>Scout, Forager, Architect, Builder, Guard, and Keeper each get only the context they need.</p></article>
+        <article><span>WORKER CELLS</span><strong>Preview role contracts</strong><p>Scout, Forager, Architect, Builder, Guard, and Keeper receive template instructions to review before use.</p></article>
         <div aria-hidden="true">→</div>
-        <article><span>HIVE OUTPUT</span><strong>Returns evidence</strong><p>Artifacts, checks, blockers, actual usage, and reusable context flow back through the guard.</p></article>
+        <article><span>PLANNER OUTPUT</span><strong>Exports prompts and policy</strong><p>Copy the mission and HIVE/1 payloads. Execution evidence and provider usage require a separate real run.</p></article>
       </section>
 
       <section class="workspace" aria-label="Agent Hive planner">
@@ -54,8 +54,8 @@
           <div class="controls-grid">
             <label class="field"><span>Total token budget</span><input id="total" type="number" min="1000" max="5000000" step="1000" value="100000"></label>
             <label class="field"><span>Protected reserve</span><div class="range-row"><input id="reserve" type="range" min="0" max="80" value="20"><output id="reserve-value">20%</output></div></label>
-            <label class="field"><span>Maximum workers</span><div class="range-row"><input id="workers" type="range" min="1" max="12" value="3"><output id="workers-value">3</output></div></label>
-            <label class="field"><span>Quality floor</span><select id="quality"><option>economy</option><option selected>balanced</option><option>frontier</option></select></label>
+            <label class="field"><span>Maximum cells per wave</span><div class="range-row"><input id="workers" type="range" min="1" max="12" value="3"><output id="workers-value">3</output></div></label>
+            <label class="field"><span>Minimum model tier</span><select id="quality"><option>economy</option><option selected>balanced</option><option>frontier</option></select></label>
             <label class="field"><span>Payload target</span><select id="target"><option>generic</option><option selected>codex</option><option>claude</option></select></label>
           </div>
           <div class="examples" aria-label="Example missions">
@@ -71,10 +71,10 @@
         <section id="results" class="results" hidden aria-live="polite">
           <div class="section-heading">
             <div><span class="step">02</span><h2>Mission Decomposition</h2></div>
-            <p>This is the actual work split produced from the queen prompt.</p>
+            <p>A deterministic template populated with your goal and constraints. Review concrete paths and tasks before execution.</p>
           </div>
           <article class="queen-card">
-            <div class="queen-card-heading"><span class="queen-mark" aria-hidden="true">Q</span><div><small>IMMUTABLE SOURCE OF TRUTH</small><h3>Queen contract</h3></div></div>
+            <div class="queen-card-heading"><span class="queen-mark" aria-hidden="true">Q</span><div><small>MISSION CONTRACT</small><h3>Queen contract</h3></div></div>
             <blockquote id="queen-goal" dir="auto"></blockquote>
             <p id="queen-rule" class="queen-rule"></p>
             <div class="queen-constraints">
@@ -83,7 +83,7 @@
               <div><span>DONE WHEN</span><ul id="queen-done"></ul></div>
             </div>
           </article>
-          <div class="decomposition-label"><span>QUEEN DELEGATES</span><strong>Each card below is a separate worker contract—not a generic phase label.</strong></div>
+          <div class="decomposition-label"><span>PROPOSED CELLS</span><strong>Each card is a role prompt to review and specialize for your repository.</strong></div>
           <div id="assignment-grid" class="assignment-grid"></div>
           <div class="metrics">
             <article><strong id="metric-cells">—</strong><span>cells</span></article>
@@ -91,11 +91,11 @@
             <article><strong id="metric-spendable">—</strong><span>spendable</span></article>
             <article><strong id="metric-reserve">—</strong><span>reserve</span></article>
           </div>
-          <div class="wave-card"><span>EXECUTION WAVES</span><strong id="wave-route"></strong></div>
-          <div class="output-proof"><strong>Want the exact prompt sent to every worker?</strong><span>Open the HIVE/1 tab below. It contains the mission, scoped task, model tier, token ceiling, dependencies, guardrails, and required return contract for each bee.</span></div>
+          <div class="wave-card"><span>PLANNED WAVES</span><strong id="wave-route"></strong></div>
+          <div class="output-proof"><strong>Inspect the proposed worker prompts</strong><span>The HIVE/1 tab contains the mission, role instructions, model tier, budget allocation, dependencies, and declared policy. No prompt is sent to a model here. The terminal runner executes ready cells sequentially.</span></div>
           <div class="tabs" role="tablist" aria-label="Plan outputs">
             <button type="button" class="tab active" data-tab="plan" role="tab">Plan</button>
-            <button type="button" class="tab" data-tab="prompt" role="tab">Prompt efficiency</button>
+            <button type="button" class="tab" data-tab="prompt" role="tab">Prompt estimates</button>
             <button type="button" class="tab" data-tab="mission" role="tab">Mission JSON</button>
             <button type="button" class="tab" data-tab="payloads" role="tab">HIVE/1</button>
             <button type="button" class="tab" data-tab="guardrails" role="tab">Guardrails</button>
@@ -105,22 +105,22 @@
           </div>
           <div id="tab-prompt" class="tab-panel" role="tabpanel">
             <div class="table-wrap"><table><thead><tr><th>Representation</th><th>Est. tokens</th><th>Precision</th><th>UTF-8 bytes</th><th>Literals</th></tr></thead><tbody id="variant-body"></tbody></table></div>
-            <div class="code-heading"><span>Best lossless representation</span><button type="button" data-copy="best-prompt">Copy</button></div><pre id="best-prompt"></pre>
-            <p class="fine-print">Token values are planning heuristics, not exact provider counts.</p>
+            <div class="code-heading"><span>Lowest estimated count with preserved literals</span><button type="button" data-copy="best-prompt">Copy</button></div><pre id="best-prompt"></pre>
+            <p class="fine-print">Token values are offline planning heuristics, not provider usage or billing. Model tiers and prompt estimates do not guarantee quality or savings.</p>
           </div>
           <div id="tab-mission" class="tab-panel" role="tabpanel"><div class="code-heading"><span>mission.json</span><button type="button" data-copy="mission-json">Copy</button></div><pre id="mission-json"></pre></div>
           <div id="tab-payloads" class="tab-panel" role="tabpanel"><div class="code-heading"><span>Worker payload preview</span><button type="button" data-copy="payload-text">Copy</button></div><pre id="payload-text"></pre></div>
-          <div id="tab-guardrails" class="tab-panel" role="tabpanel"><div class="code-heading"><span>Active deterministic policy</span><button type="button" data-copy="guardrail-json">Copy</button></div><pre id="guardrail-json"></pre></div>
+          <div id="tab-guardrails" class="tab-panel" role="tabpanel"><div class="code-heading"><span>Declared policy preview</span><button type="button" data-copy="guardrail-json">Copy</button></div><pre id="guardrail-json"></pre></div>
         </section>
       </section>
 
       <section id="security" class="security-section">
-        <div><p class="eyebrow">PUBLIC DEMO BOUNDARY</p><h2>Designed to show the system,<br>not weaken it.</h2></div>
+        <div><p class="eyebrow">PUBLIC DEMO BOUNDARY</p><h2>Planning preview.<br>No agent execution.</h2></div>
         <ul>
           <li><span>01</span>No API keys or provider calls</li>
           <li><span>02</span>No subprocesses or tool execution</li>
           <li><span>03</span>No project writes or prompt retention</li>
-          <li><span>04</span>Path, network and human gates remain visible</li>
+          <li><span>04</span>Policy is shown for review; real isolation belongs to the execution host</li>
         </ul>
       </section>
     </main>

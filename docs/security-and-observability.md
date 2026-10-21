@@ -14,14 +14,14 @@ Memory is untrusted by default. `--trusted` is reserved for a user-approved fact
 | --- | --- |
 | Workspace boundary | `hive gate` denies absolute paths and `..` traversal. |
 | Path policy | Denied prefixes win; an optional allowlist narrows the writable surface. |
-| Network policy | Denied by default and changed only in Mission Genome. |
+| Network policy | The gate denies declared network actions by default; host permissions control actual network access. |
 | High-risk actions | Delete, push, deploy, and external writes require a human-gate decision by default. |
 | Attempt breaker | The ledger rejects an attempt count above `maxAttemptsPerCell`; `status` alerts at the cap. |
 | Token budget | `next` stops dispatch at the spendable boundary; reserve release is explicit. |
-| Run budget | `hive run` rechecks global and per-cell spend before every call and refuses success without the telemetry required by the selected budget unit. |
+| Run budget | `hive run` checks reported global and per-cell spend between calls. Unknown usage after any invocation blocks further dispatch until explicit reconciliation. A single call can overrun a declared allocation. |
 | Resume binding | Run state pins the original target and absolute workspace; resume refuses an explicit target or workspace change. |
 | Process launch | Provider drivers use argument arrays without a shell, bound output, enforce optional timeouts, and keep provider permission systems enabled. |
-| Secret-safe telemetry | Recursive redaction removes prompts/content and common credentials while retaining numeric usage. |
+| Redacted telemetry | Recursive redaction filters prompts/content and common credential fields; it is not a guarantee against every possible secret format. |
 | Memory leakage | Scope/namespace matching, role visibility, sensitivity ceiling, TTL/decay, and trusted-only recall. |
 
 `--human-approved` is an assertion by the caller, not cryptographic proof. A production unattended wrapper should emit it only after a real host approval event.
@@ -32,11 +32,13 @@ Process isolation, filesystem enforcement, command approval, network sandboxing,
 
 `--approve` is a caller assertion, just like the lower-level `--human-approved` flag. Use it only after a real user decision. Command override flags select an executable directly without a shell; they are intended for testing or an explicitly trusted local wrapper.
 
-An autonomous run also requires a required guard cell. A worker's `done` result is downgraded unless it includes verifiable evidence; controlled incomplete runs return process exit code `2` for monitoring and CI.
+Autonomous execution requires downstream, read-only guard coverage for mutating cells. These checks validate declared dependencies/actions. A worker's `done` result is downgraded without a non-empty evidence list, but the runtime does not independently execute an evidence string as a test. Controlled incomplete runs return process exit code `2` for monitoring and CI.
 
 ## Monitoring model
 
-`.hive/run.json` stores resumable execution state, sanitized attempt history, stop reason, and gate decisions. `.hive/usage.json` stores the latest cell state, attempts, evidence, blockers, artifacts, token categories, model calls, latency, and optional USD cost. `.hive/audit.jsonl` records planning, run transitions, cell records, gates, rebalances, and memory operations without prompts, model output, or memory content. `hive status` aggregates metrics and raises budget, overrun, failure, blocked-cell, and attempt-limit alerts.
+`.hive/run.json` and `.hive/usage.json` expose run state, attempt history, stop reasons, gate decisions, evidence, artifacts, and reported metrics. Individual checkpoint writes are atomic; there is no multi-file transaction or concurrent-run guarantee. Unknown usage is explicit and displayed as a lower bound, not an assumed free invocation. Interrupted calls are quarantined for inspected outcome/usage reconciliation before redispatch; see [recovery](limitations.md#checkpoint-and-reconciliation).
+
+`.hive/audit.jsonl` records planning, run transitions, cell records, gates, rebalances, reconciliation, and memory operations. `hive status` aggregates metrics and raises budget, overrun, unresolved-usage, blocked-cell, and attempt-limit alerts. These views do not establish provider billing accuracy beyond the available telemetry.
 
 The audit file is local and editable by any process with workspace access. Ship it to an external append-only system when tamper evidence or centralized alert delivery is required. Do not commit `.hive/`; the directory is ignored by default.
 

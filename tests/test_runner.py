@@ -82,11 +82,15 @@ class RunnerTests(unittest.TestCase):
     def test_runner_rechecks_global_budget_between_ready_cells(self):
         mission = two_cell_mission(); mission["policy"]["maxWorkers"] = 2
         mission["budget"] = {"unit": "tokens", "total": 100, "reservePercent": 20}
-        mission["cells"][1]["dependencies"] = []; mission["cells"][1]["priority"] = 4
+        mission["cells"].append({"id": "observe", "title": "Independent read", "role": "scout", "priority": 4,
+            "complexity": 1, "risk": 1, "dependencies": [], "required": True, "actions": ["read"]})
         result = run_hive(plan=create_plan(mission), target="mock", driver=create_mock_driver({"cells": {
             "build": {"status": "done", "evidence": ["built"], "metrics": metric(85, 5)},
+            "observe": {"status": "done", "evidence": ["observed"], "metrics": metric(1, 1)},
             "verify": {"status": "done", "evidence": ["verified"], "metrics": metric(1, 1)}}}))
-        self.assertEqual(result["state"]["status"], "budget_exhausted"); self.assertNotIn("verify", result["usage"]["cells"])
+        self.assertEqual(result["state"]["status"], "budget_exhausted")
+        self.assertNotIn("observe", result["usage"]["cells"])
+        self.assertNotIn("verify", result["usage"]["cells"])
 
     def test_driver_parsers_require_structured_worker_contract(self):
         contract = 'HIVE_RESULT_JSON:{"status":"done","artifacts":["a.md"],"evidence":["ok"],"blockers":[],"reusable_context":["fact"]}'

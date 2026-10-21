@@ -18,7 +18,7 @@ Own an explicit, non-overlapping artifact set. Implement the cell, run focused c
 
 ## Guard
 
-Read-only unless the parent explicitly authorizes fixes. Verify mission constraints, regression risk, tests, security, and missing evidence. Never review from the builder's summary alone.
+Read-only. Verify mission constraints, regression risk, tests, security, and missing evidence. Never review from the builder's summary alone. Put authorized fixes in a separate builder cell with a downstream read-only guard; do not turn the guard into an unchecked writer.
 
 ## Keeper
 

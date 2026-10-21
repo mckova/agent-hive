@@ -4,13 +4,13 @@
 Goal in any language
         |
         v
-Mission Genome -- immutable intent, constraints, guardrails
+Mission Genome -- source-language goal, constraints, declared policy
         |
         v
-Lossless Prompt Compiler -- measured variants, original literals preserved
+Prompt Compiler -- counted variants and literal-preservation checks
         |
         v
-Honeycomb Planner -- cells, dependencies, work waves
+Deterministic Planner -- explicit cells or six-role template, dependencies, waves
         |
         v
 Energy Governor -- allocation, reserve, rebalancing
@@ -19,43 +19,43 @@ Energy Governor -- allocation, reserve, rebalancing
 Guardrail Gate -- paths, network, approvals, attempt caps
         |
         v
-Resumable Runner -- checkpoints, retry caps, budget stops
+Sequential Runner -- checkpoints, retry caps, between-call budget checks
         |
         v
-Platform Driver -- host-native workers or local Codex/Claude CLI
+CLI Driver -- local Codex/Claude process or offline mock
         |
         v
 HIVE/1 Payloads -- bounded context and explicit trust boundary
         |
         v
-Usage + Run State + Audit + Scoped Memory
+Usage + Run State + Audit + optional Scoped Memory
 ```
 
 ## Design rules
 
-1. Preserve the source language. Translation is an optional renderer, not destructive normalization.
+1. Keep the source language. Current normalization trims surrounding whitespace; generated role text also collapses whitespace. Arbitrary input is not preserved byte-for-byte.
 2. Keep accounting deterministic. An LLM may assess complexity, but code owns ledger totals.
 3. Allocate for task success, not the shortest prompt.
-4. Give each worker only its cell, dependencies, constraints, and return contract.
-5. Protect verification reserve from routine implementation spend.
+4. Give workers a bounded cell prompt, constraints, and return contract. Terminal handoff includes bounded untrusted dependency summaries and artifact references, not artifact file contents.
+5. Exclude the reserve from routine allocations; release it only through an explicit rebalance decision.
 6. Keep model names in adapter configuration; the core uses economy, balanced, and frontier tiers.
 7. Label count precision. Heuristics, tokenizer counts, and provider estimates are different evidence.
-8. Stop dispatch at the spendable budget boundary.
+8. Check reported spending before and after each call. A provider call can overrun its allocation before the runner can stop.
 9. Treat repository, web, tool, and recalled-memory content as data unless it is independently promoted to trusted memory.
 10. Keep prompts, credentials, and memory content out of audit events.
-11. Admit work to a swarm only when discovery, coordination, or independent verification can repay another model turn; an atomic task uses `builder -> guard`.
-12. Never accept autonomous completion without a required guard and verifiable evidence from every completed cell.
+11. For atomic, specified tasks, the skills recommend explicitly defining `builder -> guard`; the runtime does not automatically shrink the default graph.
+12. Require downstream guard coverage for mutating work and reported evidence for completed cells. Run cited checks independently when assurance matters; a worker's evidence string is not an executed test.
 
-Claude host-native mode ships read-only and mutating workers for each tier: economy maps to Haiku, balanced to Sonnet, and frontier to Opus. Codex host-native mode selects the user-authorized model when spawning a cell. Autonomous mode resolves exact model IDs from the Mission Genome for either provider.
+The plugin skills describe a separate host-native workflow: the host dispatches ready cells, passes relevant dependency artifacts, gates actions, and records actual usage. Claude host-native workers map economy/balanced/frontier to Haiku/Sonnet/Opus aliases. Codex model selection follows the host's available, user-authorized models. Terminal mode resolves model IDs from Mission Genome or an explicit `--model`; without either, the provider CLI uses its default. The deterministic core is not tied to a model generation.
 
 ## Worker roles
 
 - `scout`: map the territory without changing it.
 - `architect`: choose a route and expose dependencies.
-- `forager`: gather external or repository evidence.
+- `forager`: gather permitted external or repository evidence.
 - `builder`: produce the requested artifact.
 - `guard`: test correctness, safety, and mission compliance.
-- `keeper`: distill only verified reusable context.
+- `keeper`: return verified reusable context; the default keeper is read-only.
 
 ## Allocation and routing
 
@@ -67,4 +67,8 @@ Manual/host-native: `plan -> compare -> compile -> gate -> next -> dispatch -> r
 
 Autonomous terminal: `run -> checkpoint after every transition -> resume if explicitly requested`
 
-`next` returns at most `policy.maxWorkers` pending cells whose dependencies are done. `gate` checks proposed actions before dispatch. `record` owns the usage ledger and host-reported metrics. `run` uses the same functions, executes ready cells sequentially in v0.3, and persists `.hive/run.json` plus `.hive/usage.json`. The governor, not an agent's completion prose, determines whether more work may start.
+`next` returns at most `policy.maxWorkers` pending cells whose dependencies are done. Planning waves can contain independent cells; the terminal `run` command still executes them sequentially. Only host-managed dispatch can run independent, disjoint cells concurrently.
+
+`gate` validates declared actions and paths before dispatch; provider permissions enforce actual tool/process boundaries. `record` maintains the usage ledger. Changing an upstream outcome invalidates completed descendants while retaining spend and attempts. Terminal dependency handoff is bounded JSON, marked untrusted and explicitly truncated when needed; it contains IDs, status, artifact references, evidence, and reusable context, and does not read files.
+
+The runner records local checkpoints, blocks unresolved accounting, and requires inspected outcome/usage reconciliation before redispatching an interrupted invocation. Checkpoint writes are atomic per file, not a multi-file transaction or concurrent-run guarantee. Neither a checkpoint nor a role prompt replaces artifact review, provider billing, or an operating-system sandbox. See [limitations](limitations.md) for the recovery and accounting contract.

@@ -61,6 +61,9 @@ class ScopedMemory:
         for record in self.records.values():
             if record["scope"] != value["scope"] or record["namespace"] != namespace or record["status"] not in {"active", "cooling"}:
                 continue
+            age = (now - _date(record["createdAt"])).total_seconds() * 1000
+            if record["ttlMs"] is not None and age >= record["ttlMs"]:
+                continue
             if not ("*" in record["visibility"] or (role and role in record["visibility"])):
                 continue
             if value.get("trustedOnly") is True and record["trust"] != "trusted":
