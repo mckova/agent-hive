@@ -25,7 +25,10 @@
         <p class="eyebrow">MULTILINGUAL · BUDGET-AWARE · GUARDED</p>
         <h1>Give the queen a mission.<br><span>Preview the plan.</span></h1>
         <p class="lede">Create a six-role planning template from your goal. Inspect task prompts, model tiers, token allocations, and dependencies. This demo plans the work; it does not run agents.</p>
-        <div class="runtime-pill"><span id="runtime-dot"></span><span id="runtime-status">Loading the Python planning engine…</span></div>
+        <div class="hero-actions">
+          <a id="try-planner" class="planner-cta" href="#planner-form">Try the planner</a>
+          <div class="runtime-pill"><span id="runtime-dot"></span><span id="runtime-status" role="status">Loading the Python planning engine…</span></div>
+        </div>
       </section>
 
       <section class="proof-strip" aria-label="How Agent Hive works">
@@ -37,14 +40,14 @@
       </section>
 
       <section class="workspace" aria-label="Agent Hive planner">
-        <form id="planner-form" class="mission-panel">
+        <form id="planner-form" class="mission-panel" aria-labelledby="planner-heading" novalidate>
           <div class="section-heading">
-            <div><span class="step">01</span><h2>Queen Mission</h2></div>
+            <div><span class="step">01</span><h2 id="planner-heading">Queen Mission</h2></div>
             <p>Enter your prompt—or edit the loaded example. Nothing is stored.</p>
           </div>
           <label class="field field-wide">
             <span>Mission goal</span>
-            <textarea id="goal" maxlength="6000" rows="5" required placeholder="Describe the outcome in any language…"></textarea>
+            <textarea id="goal" maxlength="6000" rows="5" required aria-describedby="form-error" placeholder="Describe the outcome in any language…"></textarea>
           </label>
           <div class="three-column">
             <label class="field"><span>Must</span><small>One constraint per line</small><textarea id="must" rows="4"></textarea></label>
@@ -52,9 +55,9 @@
             <label class="field"><span>Done when</span><small>One verifiable criterion per line</small><textarea id="done" rows="4"></textarea></label>
           </div>
           <div class="controls-grid">
-            <label class="field"><span>Total token budget</span><input id="total" type="number" min="1000" max="5000000" step="1000" value="100000"></label>
-            <label class="field"><span>Protected reserve</span><div class="range-row"><input id="reserve" type="range" min="0" max="80" value="20"><output id="reserve-value">20%</output></div></label>
-            <label class="field"><span>Maximum cells per wave</span><div class="range-row"><input id="workers" type="range" min="1" max="12" value="3"><output id="workers-value">3</output></div></label>
+            <label class="field"><span>Total token budget</span><input id="total" type="number" min="1000" max="5000000" step="1000" value="100000" aria-describedby="form-error"></label>
+            <label class="field"><span>Protected reserve</span><div class="range-row"><input id="reserve" type="range" min="0" max="80" value="20" aria-describedby="form-error"><output id="reserve-value">20%</output></div></label>
+            <label class="field"><span>Maximum cells per wave</span><div class="range-row"><input id="workers" type="range" min="1" max="12" value="3" aria-describedby="form-error"><output id="workers-value">3</output></div></label>
             <label class="field"><span>Minimum model tier</span><select id="quality"><option>economy</option><option selected>balanced</option><option>frontier</option></select></label>
             <label class="field"><span>Payload target</span><select id="target"><option>generic</option><option selected>codex</option><option>claude</option></select></label>
           </div>
@@ -65,7 +68,7 @@
             <button type="button" data-example="ja">日本語</button>
           </div>
           <button id="plan-button" class="primary-button" type="submit" disabled>Decompose mission into hive tasks <span aria-hidden="true">→</span></button>
-          <p id="form-error" class="error" role="alert"></p>
+          <p id="form-error" class="error" role="alert" aria-atomic="true"></p>
         </form>
 
         <section id="results" class="results" hidden aria-live="polite">

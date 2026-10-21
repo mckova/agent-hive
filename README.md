@@ -1,12 +1,18 @@
 # Agent Hive
 
+[![CI](https://github.com/mckova/agent-hive/actions/workflows/ci.yml/badge.svg)](https://github.com/mckova/agent-hive/actions/workflows/ci.yml) · [v0.4.1](CHANGELOG.md) · Python 3.11+ · Alpha
+
 > Plan coding work as explicit tasks, route it by model tier, and track execution against a declared budget.
 
-Agent Hive is an Alpha Python orchestration toolkit with Codex and Claude Code integrations. Its deterministic core turns a JSON **Mission Genome** into dependency-aware **cells**, assigns token or cost allocations, compiles `HIVE/1` worker prompts, and records usage and execution state.
+Agent Hive is an Alpha Python toolkit for developers who need inspectable coding-agent workflows with explicit budgets and recovery state. It integrates the existing Codex and Claude Code CLIs. Its deterministic core turns a JSON **Mission Genome** into dependency-aware **cells**, assigns token or cost allocations, compiles `HIVE/1` worker prompts, and records usage and execution state.
+
+**[Try the planner demo →](https://huggingface.co/spaces/mckova/agent-hive)** · [Offline quick start](#start-with-an-offline-preview) · [Architecture](docs/architecture.md) · [CI results](https://github.com/mckova/agent-hive/actions/workflows/ci.yml)
+
+Enter a goal in the browser to preview role-specific tasks, dependency waves, budget allocations, and copyable prompts. The demo generates plans and payloads without executing coding agents.
+
+Six CI jobs cover the test suite and repository checks on Python 3.11–3.13 across Windows and Ubuntu. See the [workflow](.github/workflows/ci.yml) for the exact checks.
 
 The built-in terminal runner invokes an installed, authenticated `codex` or `claude` CLI. Plugin skills also describe a host-native workflow in which the host dispatches workers and records their results. The core is independent of a particular model generation; the available models, permissions, billing, and usage fields depend on the selected host and provider.
-
-Try the [Hugging Face playground](https://huggingface.co/spaces/mckova/agent-hive) for a planning preview. It creates plans and prompt payloads; it does not execute coding agents or demonstrate a completed autonomous coding run.
 
 ## What is implemented
 

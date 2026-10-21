@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Clear stale planner output when inputs change and show accessible errors for empty or whitespace-only goals.
+- Add a direct planner entry point and account for the sticky header when scrolling to the form or results.
+- Surface the planner demo, intended audience, and CI evidence at the start of the README; add focused offline UI regression checks.
+
 ## 0.4.1 - 2026-10-21
 
 - Reject malformed `cells` values instead of silently replacing them with the default graph.

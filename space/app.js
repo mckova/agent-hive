@@ -75,13 +75,58 @@ def build_plan_json(goal, must, avoid, done, total, reserve, workers, quality, t
     console.error(error);
     status.textContent = "Python engine could not load. Refresh to retry.";
     dot.classList.add("error");
-    document.querySelector("#form-error").textContent = "The browser could not load Pyodide from its CDN.";
+    showPlannerError("The browser could not load Pyodide from its CDN. Refresh to retry.");
   }
 }
 
 function value(id) { return document.querySelector(`#${id}`).value; }
 function number(id) { return Number(value(id)); }
 function formatNumber(value) { return new Intl.NumberFormat().format(value); }
+
+function invalidatePlan() {
+  document.querySelector("#results").hidden = true;
+  document.querySelector("#form-error").textContent = "";
+  ["goal", "total", "reserve", "workers"].forEach((id) => {
+    document.querySelector(`#${id}`).removeAttribute("aria-invalid");
+  });
+}
+
+function showPlannerError(message, field = null) {
+  if (field) field.focus();
+  document.querySelector("#results").hidden = true;
+  document.querySelector("#form-error").textContent = message;
+  if (field) {
+    field.setAttribute("aria-invalid", "true");
+  }
+}
+
+function plannerErrorMessage(cause) {
+  const lines = String(cause ?? "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const message = (lines.at(-1) || "").replace(/^(?:[\w.]*Error:\s*)+/, "").trim();
+  return message || "Could not create a plan. Check the mission and try again.";
+}
+
+function validatePlannerInput() {
+  const goal = document.querySelector("#goal");
+  if (!goal.value.trim()) {
+    showPlannerError("Enter a mission goal in any language.", goal);
+    return false;
+  }
+  const limits = [
+    ["total", 1_000, 5_000_000, 1_000, "Total token budget must be a whole number from 1,000 to 5,000,000 in steps of 1,000."],
+    ["reserve", 0, 80, 1, "Protected reserve must be a whole percentage from 0 to 80."],
+    ["workers", 1, 12, 1, "Maximum cells per wave must be a whole number from 1 to 12."],
+  ];
+  for (const [id, minimum, maximum, step, message] of limits) {
+    const field = document.querySelector(`#${id}`);
+    const amount = Number(field.value);
+    if (!field.value.trim() || !Number.isInteger(amount) || amount < minimum || amount > maximum || (amount - minimum) % step !== 0) {
+      showPlannerError(message, field);
+      return false;
+    }
+  }
+  return true;
+}
 
 function element(tag, className = "", text = "") {
   const item = document.createElement(tag);
@@ -182,9 +227,9 @@ function renderResult(result, shouldScroll = true) {
 }
 
 function runPlanner(shouldScroll = true) {
-  const error = document.querySelector("#form-error");
-  error.textContent = "";
-  if (!buildPlan) { error.textContent = "The Python engine is still loading."; return false; }
+  invalidatePlan();
+  if (!validatePlannerInput()) return false;
+  if (!buildPlan) { showPlannerError("The Python engine is still loading. Wait until it is ready, then try again."); return false; }
   try {
     const serialized = buildPlan(
       value("goal"), value("must"), value("avoid"), value("done"), number("total"),
@@ -194,7 +239,7 @@ function runPlanner(shouldScroll = true) {
     return true;
   } catch (cause) {
     console.error(cause);
-    error.textContent = String(cause).replace(/^PythonError:\s*/, "").split("\n").at(-1);
+    showPlannerError(plannerErrorMessage(cause));
     return false;
   }
 }
@@ -202,6 +247,15 @@ function runPlanner(shouldScroll = true) {
 document.querySelector("#planner-form").addEventListener("submit", (event) => {
   event.preventDefault();
   runPlanner(true);
+});
+
+document.querySelector("#planner-form").addEventListener("input", invalidatePlan);
+document.querySelector("#planner-form").addEventListener("change", invalidatePlan);
+
+document.querySelector("#try-planner").addEventListener("click", (event) => {
+  event.preventDefault();
+  document.querySelector("#goal").focus({ preventScroll: true });
+  document.querySelector("#planner-form").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 document.querySelector("#reserve").addEventListener("input", (event) => {
@@ -219,6 +273,7 @@ document.querySelectorAll("[data-example]").forEach((button) => {
 });
 
 function applyExample(example) {
+  invalidatePlan();
   Object.entries(example).forEach(([key, text]) => { document.querySelector(`#${key}`).value = text; });
 }
 
