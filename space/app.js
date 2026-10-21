@@ -135,7 +135,7 @@ function renderAssignments(assignments) {
 
     const meta = element("div", "assignment-meta");
     meta.appendChild(element("span", "tier", assignment.modelTier));
-    meta.appendChild(element("span", "", `${formatNumber(assignment.allocation)} tokens max`));
+    meta.appendChild(element("span", "", `${formatNumber(assignment.allocation)} tokens allocated`));
     meta.appendChild(element("span", "", `depends on: ${assignment.dependencies.join(" + ") || "queen"}`));
     card.appendChild(meta);
     grid.appendChild(card);
