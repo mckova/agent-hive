@@ -16,6 +16,8 @@ Agent Hive provides optional local memory outside the conversation. The store de
 
 ## Retention and poisoning controls
 
+New records default to a 24-hour TTL, including records created with `memory put`. Use `--ttl-ms` to specify a different TTL in milliseconds. This default does not change records already stored without a TTL.
+
 Retention combines recency, confidence, relevance, source quality, verified utility, reuse, and sensitivity. Untrusted memories start with lower source quality and utility. Only verified successful reuse can reinforce a record. Queries exclude TTL-expired records; `memory decay` removes expired records from storage and cools, archives, or deletes records according to retention score. Sensitive records above `0.5` are excluded from ordinary queries.
 
 These are deterministic filters, not semantic retrieval. The MVP does not embed content, infer entities, encrypt the file, or authenticate namespaces. A multi-user product requires tenant-isolated encrypted storage and server-side authorization.

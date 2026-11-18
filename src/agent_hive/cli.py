@@ -266,10 +266,13 @@ def _memory_command(args: list[str], io: Any) -> Any:
         content = _option(rest, "--content")
         if not content:
             raise ValueError("memory put requires --content.")
-        record = memory.write({"scope": scope, "namespace": namespace, "content": content,
+        value = {"scope": scope, "namespace": namespace, "content": content,
             "kind": _option(rest, "--kind") or "context", "trust": "trusted" if "--trusted" in rest else "untrusted",
-            "visibility": _options(rest, "--visibility"), "ttlMs": _optional_number(rest, "--ttl-ms"),
-            "sensitivity": _numeric_option(rest, "--sensitivity")})
+            "visibility": _options(rest, "--visibility"), "sensitivity": _numeric_option(rest, "--sensitivity")}
+        ttl_ms = _optional_number(rest, "--ttl-ms")
+        if ttl_ms is not None:
+            value["ttlMs"] = ttl_ms
+        record = memory.write(value)
         _write_json(store_path, memory.export())
         append_audit(_audit_path(rest, store_path), {"event": "memory.put", "memoryId": record["id"], "scope": scope,
             "namespace": namespace, "kind": record["kind"], "trust": record["trust"], "visibility": record["visibility"]})
