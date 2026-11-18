@@ -6,7 +6,7 @@
 
 Agent Hive is an Alpha Python toolkit for developers who need inspectable coding-agent workflows with explicit budgets and recovery state. It integrates the existing Codex and Claude Code CLIs. Its deterministic core turns a JSON **Mission Genome** into dependency-aware **cells**, assigns token or cost allocations, compiles `HIVE/1` worker prompts, and records usage and execution state.
 
-**[Try the planner demo →](https://huggingface.co/spaces/mckova/agent-hive)** · [Offline quick start](#start-with-an-offline-preview) · [Architecture](docs/architecture.md) · [CI results](https://github.com/mckova/agent-hive/actions/workflows/ci.yml)
+**[Try the planner demo →](https://huggingface.co/spaces/mckova/agent-hive)** · [Offline quick start](#start-with-an-offline-preview) · [Architecture](docs/architecture.md) · [CI results](https://github.com/mckova/agent-hive/actions/workflows/ci.yml) · [Acknowledgments](#acknowledgments)
 
 Enter a goal in the browser to preview role-specific tasks, dependency waves, budget allocations, and copyable prompts. The demo generates plans and payloads without executing coding agents.
 
@@ -212,6 +212,10 @@ python .\scripts\validate_repo.py
 `scripts/benchmark.py` is the local deterministic prompt-count benchmark. If you intentionally change core files, `python .\scripts\sync_plugin_runtime.py` copies the shared runtime into plugin trees; it is a maintenance write operation. Review the resulting copies and rerun validation.
 
 Read the [architecture](docs/architecture.md), [HIVE/1 protocol](docs/hive-protocol.md), [memory model](docs/memory.md), [security and observability](docs/security-and-observability.md), [Prompt IR decision](docs/decisions/0001-hive-over-prompt-ir.md), and [limitations](docs/limitations.md).
+
+## Acknowledgments
+
+Thanks to [@mattabate](https://github.com/mattabate) for reporting the CLI memory TTL default mismatch and suggesting a fix in [#4](https://github.com/mckova/agent-hive/issues/4).
 
 ## License
 
